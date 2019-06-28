@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Baking App</string>
+    <string name="base_url">https://d17h27t6h515a5.cloudfront.net</string>
 </resources>

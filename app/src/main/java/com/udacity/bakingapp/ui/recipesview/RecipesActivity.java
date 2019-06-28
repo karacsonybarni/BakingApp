@@ -1,10 +1,12 @@
-package com.udacity.bakingapp;
+package com.udacity.bakingapp.ui.recipesview;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 
-public class MainActivity extends AppCompatActivity {
+import com.udacity.bakingapp.R;
+
+public class RecipesActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
