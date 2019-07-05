@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.udacity.bakingapp.data.Repository;
-import com.udacity.bakingapp.data.database.entity.Recipe;
+import com.udacity.bakingapp.data.entity.Recipe;
 
 import java.util.List;
 

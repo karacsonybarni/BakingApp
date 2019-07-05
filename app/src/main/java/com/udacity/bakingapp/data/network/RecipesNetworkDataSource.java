@@ -5,7 +5,7 @@ import android.content.Context;
 import androidx.lifecycle.MutableLiveData;
 
 import com.udacity.bakingapp.R;
-import com.udacity.bakingapp.data.database.entity.Recipe;
+import com.udacity.bakingapp.data.entity.Recipe;
 import com.udacity.bakingapp.util.json.Parser;
 
 import org.json.JSONException;

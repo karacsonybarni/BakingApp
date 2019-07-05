@@ -1,6 +1,6 @@
 package com.udacity.bakingapp;
 
-import com.udacity.bakingapp.data.database.entity.Recipe;
+import com.udacity.bakingapp.data.entity.Recipe;
 import com.udacity.bakingapp.util.json.Parser;
 
 import org.json.JSONException;

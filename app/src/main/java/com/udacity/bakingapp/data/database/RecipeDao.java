@@ -7,7 +7,7 @@ import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Transaction;
 
-import com.udacity.bakingapp.data.database.entity.Recipe;
+import com.udacity.bakingapp.data.entity.Recipe;
 
 import java.util.List;
 

@@ -5,7 +5,7 @@ import android.content.Context;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
 
-import com.udacity.bakingapp.data.database.entity.Recipe;
+import com.udacity.bakingapp.data.entity.Recipe;
 
 @androidx.room.Database(entities = {Recipe.class}, version = 1, exportSchema = false)
 public abstract class Database extends RoomDatabase {

@@ -1,4 +1,4 @@
-package com.udacity.bakingapp.data.database.entity;
+package com.udacity.bakingapp.data.entity;
 
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;

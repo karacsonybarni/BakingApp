@@ -10,7 +10,7 @@ import android.os.Bundle;
 
 import com.udacity.bakingapp.R;
 import com.udacity.bakingapp.data.Repository;
-import com.udacity.bakingapp.data.database.entity.Recipe;
+import com.udacity.bakingapp.data.entity.Recipe;
 import com.udacity.bakingapp.util.InjectorUtils;
 
 import java.util.List;

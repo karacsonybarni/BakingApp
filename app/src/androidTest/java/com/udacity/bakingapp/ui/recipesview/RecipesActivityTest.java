@@ -3,7 +3,7 @@ package com.udacity.bakingapp.ui.recipesview;
 import androidx.test.rule.ActivityTestRule;
 
 import com.udacity.bakingapp.TestData;
-import com.udacity.bakingapp.data.database.entity.Recipe;
+import com.udacity.bakingapp.data.entity.Recipe;
 
 import org.junit.Rule;
 import org.junit.Test;

@@ -6,7 +6,7 @@ import androidx.test.core.app.ApplicationProvider;
 import androidx.test.rule.ActivityTestRule;
 
 import com.udacity.bakingapp.data.database.Database;
-import com.udacity.bakingapp.data.database.entity.Recipe;
+import com.udacity.bakingapp.data.entity.Recipe;
 import com.udacity.bakingapp.data.network.RecipesNetworkDataSource;
 import com.udacity.bakingapp.ui.recipesview.RecipesActivity;
 import com.udacity.bakingapp.util.AppExecutors;
