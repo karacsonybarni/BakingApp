@@ -16,6 +16,7 @@ public class ParserTest {
         assertThat(recipes.get(0).getName()).isEqualTo("Nutella Pie");
     }
 
+    @SuppressWarnings("SpellCheckingInspection")
     private static final String json =
             "[\n" +
                     "  {\n" +

@@ -11,6 +11,7 @@ import java.util.List;
 
 public class Parser {
 
+    private static final String ID = "id";
     private static final String NAME = "name";
 
     public static List<Recipe> parseRecipes(String jsonString) throws JSONException {
@@ -25,6 +26,7 @@ public class Parser {
 
     private static Recipe parseRecipe(JSONObject jsonObject) throws JSONException {
         Recipe recipe = new Recipe();
+        recipe.setId(jsonObject.getLong(ID));
         recipe.setName(jsonObject.getString(NAME));
         return recipe;
     }

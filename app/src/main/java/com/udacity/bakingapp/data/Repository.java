@@ -1,7 +1,10 @@
-package com.udacity.bakingapp.data.database;
+package com.udacity.bakingapp.data;
 
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 
+import com.udacity.bakingapp.data.database.Database;
+import com.udacity.bakingapp.data.database.RecipeDao;
 import com.udacity.bakingapp.data.database.entity.Recipe;
 import com.udacity.bakingapp.data.network.RecipesNetworkDataSource;
 import com.udacity.bakingapp.util.AppExecutors;
@@ -11,18 +14,18 @@ import java.util.List;
 public class Repository {
 
     private static Repository sInstance;
-    private RecipesNetworkDataSource recipesNetworkDataSource;
+    private RecipeDao recipeDao;
     private AppExecutors executors;
-    private Observer<? super List<Recipe>> networkDataObserver;
 
     Repository(
+            Database database,
             RecipesNetworkDataSource recipesNetworkDataSource,
             AppExecutors executors) {
-        this.recipesNetworkDataSource = recipesNetworkDataSource;
+        recipeDao = database.recipeDao();
         this.executors = executors;
 
-        networkDataObserver = newNetworkDataObserver();
-        recipesNetworkDataSource.getRecipes().observeForever(networkDataObserver);
+        recipesNetworkDataSource.getRecipes().observeForever(newNetworkDataObserver());
+        recipesNetworkDataSource.fetchRecipes();
     }
 
     private Observer<? super List<Recipe>> newNetworkDataObserver() {
@@ -35,15 +38,20 @@ public class Repository {
     }
 
     void updateRecipes(List<Recipe> recipes) {
-
+        recipeDao.updateMovies(recipes);
     }
 
     public static Repository getInstance(
+            Database database,
             RecipesNetworkDataSource recipesNetworkDataSource,
             AppExecutors executors) {
         if (sInstance == null) {
-            sInstance = new Repository(recipesNetworkDataSource, executors);
+            sInstance = new Repository(database, recipesNetworkDataSource, executors);
         }
         return sInstance;
+    }
+
+    public LiveData<List<Recipe>> getRecipes() {
+        return recipeDao.getRecipes();
     }
 }
