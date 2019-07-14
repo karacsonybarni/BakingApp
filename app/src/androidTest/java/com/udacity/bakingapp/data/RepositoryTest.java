@@ -64,16 +64,18 @@ public class RepositoryTest {
         Repository repository = InjectorUtils.getRepository(context);
         repository.getRecipes().observe(activityActivityTestRule.getActivity(),
                 recipes -> {
-                    if (dbLatch.getCount() == 1) {
-                        assertThat(recipes).isNotEmpty();
+                    if (dbLatch.getCount() == 1 || !recipes.isEmpty()) {
+                        testRecipes(recipes);
                         dbLatch.countDown();
                     }
 
                     dbLatch.countDown();
-
-                    if (!recipes.isEmpty()) {
-                        dbLatch.countDown();
-                    }
                 });
+    }
+
+    private void testRecipes(List<Recipe> recipes) {
+        assertThat(recipes).isNotEmpty();
+        String ingredientName = recipes.get(0).getIngredients().get(0).getName();
+        assertThat(ingredientName).isEqualTo("Graham Cracker crumbs");
     }
 }

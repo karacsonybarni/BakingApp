@@ -38,7 +38,7 @@ public class Repository {
     }
 
     void updateRecipes(List<Recipe> recipes) {
-        recipeDao.updateMovies(recipes);
+        recipeDao.updateRecipes(recipes);
     }
 
     public static Repository getInstance(

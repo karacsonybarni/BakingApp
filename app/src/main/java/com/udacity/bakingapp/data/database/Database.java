@@ -4,10 +4,12 @@ import android.content.Context;
 
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
+import androidx.room.TypeConverters;
 
 import com.udacity.bakingapp.data.entity.Recipe;
 
-@androidx.room.Database(entities = {Recipe.class}, version = 1, exportSchema = false)
+@androidx.room.Database(entities = {Recipe.class}, version = 2, exportSchema = false)
+@TypeConverters(IngredientConverter.class)
 public abstract class Database extends RoomDatabase {
 
     private static final Object LOCK = new Object();

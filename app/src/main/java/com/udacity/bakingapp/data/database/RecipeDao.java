@@ -18,7 +18,7 @@ public abstract class RecipeDao {
     public abstract LiveData<List<Recipe>> getRecipes();
 
     @Transaction
-    public void updateMovies(List<Recipe> recipes) {
+    public void updateRecipes(List<Recipe> recipes) {
         deleteAllRecipes();
         bulkInsert(recipes);
     }
