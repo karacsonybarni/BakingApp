@@ -51,6 +51,10 @@ public class Repository {
         return sInstance;
     }
 
+    public LiveData<Recipe> getRecipe(long id) {
+        return recipeDao.getRecipe(id);
+    }
+
     public LiveData<List<Recipe>> getRecipes() {
         return recipeDao.getRecipes();
     }

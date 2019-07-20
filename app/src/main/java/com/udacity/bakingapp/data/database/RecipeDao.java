@@ -14,6 +14,9 @@ import java.util.List;
 @Dao
 public abstract class RecipeDao {
 
+    @Query("SELECT * FROM recipe WHERE id = :id")
+    public abstract LiveData<Recipe> getRecipe(long id);
+
     @Query("SELECT * FROM recipe")
     public abstract LiveData<List<Recipe>> getRecipes();
 

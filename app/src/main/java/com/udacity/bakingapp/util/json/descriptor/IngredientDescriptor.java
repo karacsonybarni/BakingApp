@@ -1,4 +1,4 @@
-package com.udacity.bakingapp.util.json.object;
+package com.udacity.bakingapp.util.json.descriptor;
 
 public class IngredientDescriptor {
 

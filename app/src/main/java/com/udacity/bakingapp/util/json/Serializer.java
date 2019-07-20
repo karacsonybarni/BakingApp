@@ -1,7 +1,7 @@
 package com.udacity.bakingapp.util.json;
 
 import com.udacity.bakingapp.data.entity.Ingredient;
-import com.udacity.bakingapp.util.json.object.IngredientDescriptor;
+import com.udacity.bakingapp.util.json.descriptor.IngredientDescriptor;
 
 import org.json.JSONArray;
 import org.json.JSONException;

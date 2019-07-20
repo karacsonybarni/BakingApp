@@ -10,17 +10,13 @@ import java.util.List;
 
 class RecipesActivityViewModel extends ViewModel {
 
-    private Repository repository;
     private LiveData<List<Recipe>> recipes;
 
     RecipesActivityViewModel(Repository repository) {
-        this.repository = repository;
+        recipes = repository.getRecipes();
     }
 
     LiveData<List<Recipe>> getRecipes() {
-        if (recipes == null) {
-            recipes = repository.getRecipes();
-        }
         return recipes;
     }
 }

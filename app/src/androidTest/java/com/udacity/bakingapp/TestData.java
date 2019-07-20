@@ -5,13 +5,25 @@ import com.udacity.bakingapp.util.json.Parser;
 
 import org.json.JSONException;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class TestData {
 
-    public static List<Recipe> getRecipes() {
+    public static final long NUTELLA_PIE_ID = 1;
+    private static Map<Long, Recipe> recipeMap;
+
+    public static Map<Long, Recipe> getRecipeMap() {
         try {
-            return Parser.parseRecipes(RECIPES_JSON);
+            if (recipeMap == null) {
+                recipeMap = new HashMap<>();
+                List<Recipe> recipeList = Parser.parseRecipes(RECIPES_JSON);
+                for (Recipe recipe : recipeList) {
+                    recipeMap.put(recipe.getId(), recipe);
+                }
+            }
+            return recipeMap;
         } catch (JSONException e) {
             e.printStackTrace();
             return null;

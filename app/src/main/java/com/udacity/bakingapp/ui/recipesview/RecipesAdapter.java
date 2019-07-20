@@ -1,6 +1,7 @@
 package com.udacity.bakingapp.ui.recipesview;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.udacity.bakingapp.R;
 import com.udacity.bakingapp.data.entity.Recipe;
+import com.udacity.bakingapp.ui.descriptionview.DescriptionActivity;
 
 import java.util.List;
 
@@ -44,6 +46,15 @@ class RecipesAdapter extends RecyclerView.Adapter<RecipesAdapter.RecipeViewHolde
     public void onBindViewHolder(@NonNull RecipeViewHolder holder, int position) {
         Recipe recipe = recipes.get(position);
         holder.name.setText(recipe.getName());
+        setOnClickListener(holder, recipe);
+    }
+
+    private void setOnClickListener(RecipeViewHolder holder, Recipe recipe) {
+        holder.itemView.setOnClickListener(view -> {
+            Intent intent = new Intent(context, DescriptionActivity.class);
+            intent.putExtra(DescriptionActivity.RECIPE_ID_EXTRA, recipe.getId());
+            context.startActivity(intent);
+        });
     }
 
     @Override
