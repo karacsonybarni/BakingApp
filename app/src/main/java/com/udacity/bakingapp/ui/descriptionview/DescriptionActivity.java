@@ -1,22 +1,19 @@
 package com.udacity.bakingapp.ui.descriptionview;
 
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.udacity.bakingapp.R;
 import com.udacity.bakingapp.data.Repository;
-import com.udacity.bakingapp.data.entity.Ingredient;
 import com.udacity.bakingapp.data.entity.Recipe;
 import com.udacity.bakingapp.util.InjectorUtils;
 
-import java.text.DecimalFormat;
 import java.util.Objects;
 
 public class DescriptionActivity extends AppCompatActivity {
@@ -24,14 +21,16 @@ public class DescriptionActivity extends AppCompatActivity {
     public static final String RECIPE_ID_EXTRA = "recipeId";
 
     private DescriptionActivityViewModel viewModel;
-    private Recipe recipe;
+    private DescriptionAdapter adapter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_description);
         viewModel = getViewModel(getRecipeId());
-        populateViews();
+        adapter = new DescriptionAdapter(this);
+        updateRecipe();
+        initRecyclerView();
     }
 
     private long getRecipeId() {
@@ -45,36 +44,28 @@ public class DescriptionActivity extends AppCompatActivity {
         return viewModelProvider.get(DescriptionActivityViewModel.class);
     }
 
-    private void populateViews() {
-        viewModel.getRecipe().observe(this, this::populateViews);
+    private void updateRecipe() {
+        viewModel.getRecipe().observe(this, this::updateRecipe);
     }
 
-    private void populateViews(Recipe recipe) {
-        this.recipe = recipe;
-        setTitle();
-        fillIngredientsLayout();
+    private void updateRecipe(Recipe recipe) {
+        setTitle(recipe.getName());
+        adapter.update(recipe);
     }
 
-    private void setTitle() {
-        Objects.requireNonNull(getSupportActionBar()).setTitle(recipe.getName());
+    private void setTitle(String title) {
+        Objects.requireNonNull(getSupportActionBar()).setTitle(title);
     }
 
-    private void fillIngredientsLayout() {
-        ViewGroup ingredientsLayout = findViewById(R.id.ingredients);
-        for (Ingredient ingredient : recipe.getIngredients()) {
-            TextView ingredientView =
-                    (TextView) LayoutInflater
-                            .from(this)
-                            .inflate(R.layout.ingredient, ingredientsLayout, false);
-            ingredientView.setText(getIngredientText(ingredient));
-            ingredientsLayout.addView(ingredientView);
-        }
+    private void initRecyclerView() {
+        RecyclerView recyclerView = findViewById(R.id.description);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setAdapter(adapter);
     }
 
-    private String getIngredientText(Ingredient ingredient) {
-        String quantity = new DecimalFormat("#.##").format(ingredient.getQuantity());
-        return getString(
-                R.string.ingredient,
-                quantity, ingredient.getMeasure(), ingredient.getName());
+    @Override
+    protected void onDestroy() {
+        viewModel.getRecipe().removeObservers(this);
+        super.onDestroy();
     }
 }
