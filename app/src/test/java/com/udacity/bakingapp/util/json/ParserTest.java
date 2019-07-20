@@ -15,7 +15,12 @@ public class ParserTest {
     public void parseRecipes() throws JSONException {
         List<Recipe> recipes = Parser.parseRecipes(TestData.RECIPES_JSON);
         Recipe nutellaPie = recipes.get(0);
-        assertThat(nutellaPie.getName()).isEqualTo("Nutella Pie");
-        assertThat(nutellaPie.getIngredients().get(0).getName()).isEqualTo("Graham Cracker crumbs");
+
+        assertThat(nutellaPie.getName())
+                .isEqualTo("Nutella Pie");
+        assertThat(nutellaPie.getIngredients().get(0).getName())
+                .isEqualTo("Graham Cracker crumbs");
+        assertThat(nutellaPie.getSteps().get(0).getShortDescription())
+                .isEqualTo("Recipe Introduction");
     }
 }

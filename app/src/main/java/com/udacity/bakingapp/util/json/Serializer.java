@@ -1,7 +1,9 @@
 package com.udacity.bakingapp.util.json;
 
 import com.udacity.bakingapp.data.entity.Ingredient;
+import com.udacity.bakingapp.data.entity.Step;
 import com.udacity.bakingapp.util.json.descriptor.IngredientDescriptor;
+import com.udacity.bakingapp.util.json.descriptor.StepDescriptor;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -24,11 +26,11 @@ public class Serializer {
     }
 
     public static String serializeIngredients(List<Ingredient> ingredients) throws JSONException {
-        JSONArray array = new JSONArray();
+        JSONArray jsonArray = new JSONArray();
         for (Ingredient ingredient : ingredients) {
-            array.put(getInstance().serializeIngredient(ingredient));
+            jsonArray.put(getInstance().serializeIngredient(ingredient));
         }
-        return array.toString();
+        return jsonArray.toString();
     }
 
     private JSONObject serializeIngredient(Ingredient ingredient) throws JSONException {
@@ -36,6 +38,24 @@ public class Serializer {
         jsonObject.put(IngredientDescriptor.NAME, ingredient.getName());
         jsonObject.put(IngredientDescriptor.QUANTITY, ingredient.getQuantity());
         jsonObject.put(IngredientDescriptor.MEASURE, ingredient.getMeasure());
+        return jsonObject;
+    }
+
+    public static String serializeSteps(List<Step> steps) throws JSONException {
+        JSONArray jsonArray = new JSONArray();
+        for (Step step : steps) {
+            jsonArray.put(getInstance().serializeStep(step));
+        }
+        return jsonArray.toString();
+    }
+
+    private JSONObject serializeStep(Step step) throws JSONException {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put(StepDescriptor.ID, step.getId());
+        jsonObject.put(StepDescriptor.SHORT_DESCRIPTION, step.getShortDescription());
+        jsonObject.put(StepDescriptor.DESCRIPTION, step.getDescription());
+        jsonObject.put(StepDescriptor.VIDEO_URL, step.getVideoURL());
+        jsonObject.put(StepDescriptor.THUMBNAIL_URL, step.getThumbnailURL());
         return jsonObject;
     }
 }

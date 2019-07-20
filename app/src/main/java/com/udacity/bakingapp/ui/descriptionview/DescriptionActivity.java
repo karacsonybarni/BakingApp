@@ -1,6 +1,9 @@
 package com.udacity.bakingapp.ui.descriptionview;
 
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -9,9 +12,11 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.udacity.bakingapp.R;
 import com.udacity.bakingapp.data.Repository;
+import com.udacity.bakingapp.data.entity.Ingredient;
 import com.udacity.bakingapp.data.entity.Recipe;
 import com.udacity.bakingapp.util.InjectorUtils;
 
+import java.text.DecimalFormat;
 import java.util.Objects;
 
 public class DescriptionActivity extends AppCompatActivity {
@@ -47,9 +52,29 @@ public class DescriptionActivity extends AppCompatActivity {
     private void populateViews(Recipe recipe) {
         this.recipe = recipe;
         setTitle();
+        fillIngredientsLayout();
     }
 
     private void setTitle() {
         Objects.requireNonNull(getSupportActionBar()).setTitle(recipe.getName());
+    }
+
+    private void fillIngredientsLayout() {
+        ViewGroup ingredientsLayout = findViewById(R.id.ingredients);
+        for (Ingredient ingredient : recipe.getIngredients()) {
+            TextView ingredientView =
+                    (TextView) LayoutInflater
+                            .from(this)
+                            .inflate(R.layout.ingredient, ingredientsLayout, false);
+            ingredientView.setText(getIngredientText(ingredient));
+            ingredientsLayout.addView(ingredientView);
+        }
+    }
+
+    private String getIngredientText(Ingredient ingredient) {
+        String quantity = new DecimalFormat("#.##").format(ingredient.getQuantity());
+        return getString(
+                R.string.ingredient,
+                quantity, ingredient.getMeasure(), ingredient.getName());
     }
 }

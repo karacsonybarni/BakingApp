@@ -2,8 +2,10 @@ package com.udacity.bakingapp.util.json;
 
 import com.udacity.bakingapp.data.entity.Ingredient;
 import com.udacity.bakingapp.data.entity.Recipe;
+import com.udacity.bakingapp.data.entity.Step;
 import com.udacity.bakingapp.util.json.descriptor.IngredientDescriptor;
 import com.udacity.bakingapp.util.json.descriptor.RecipeDescriptor;
+import com.udacity.bakingapp.util.json.descriptor.StepDescriptor;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -41,6 +43,7 @@ public class Parser {
         setId(recipe, jsonObject);
         setName(recipe, jsonObject);
         setIngredients(recipe, jsonObject);
+        setSteps(recipe, jsonObject);
         return recipe;
     }
 
@@ -79,5 +82,34 @@ public class Parser {
         ingredient.setQuantity(jsonObject.getDouble(IngredientDescriptor.QUANTITY));
         ingredient.setMeasure(jsonObject.getString(IngredientDescriptor.MEASURE));
         return ingredient;
+    }
+
+    private void setSteps(Recipe recipe, JSONObject jsonObject) throws JSONException {
+        JSONArray jsonArray = jsonObject.getJSONArray(RecipeDescriptor.STEPS);
+        List<Step> steps = parseSteps(jsonArray);
+        recipe.setSteps(steps);
+    }
+
+    public static List<Step> parseSteps(String jsonString) throws JSONException {
+        JSONArray jsonArray = new JSONArray(jsonString);
+        return getINSTANCE().parseSteps(jsonArray);
+    }
+
+    private List<Step> parseSteps(JSONArray jsonArray) throws JSONException {
+        List<Step> steps = new ArrayList<>();
+        for (int i = 0; i < jsonArray.length(); i++) {
+            steps.add(parseStep(jsonArray.getJSONObject(i)));
+        }
+        return steps;
+    }
+
+    private Step parseStep(JSONObject jsonObject) throws JSONException {
+        Step step = new Step();
+        step.setId(jsonObject.getLong(StepDescriptor.ID));
+        step.setShortDescription(jsonObject.getString(StepDescriptor.SHORT_DESCRIPTION));
+        step.setDescription(jsonObject.getString(StepDescriptor.DESCRIPTION));
+        step.setVideoURL(jsonObject.getString(StepDescriptor.VIDEO_URL));
+        step.setThumbnailURL(jsonObject.getString(StepDescriptor.THUMBNAIL_URL));
+        return step;
     }
 }
