@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -20,6 +21,7 @@ import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
+import com.squareup.picasso.Picasso;
 import com.udacity.bakingapp.R;
 import com.udacity.bakingapp.data.entity.Ingredient;
 import com.udacity.bakingapp.data.entity.Recipe;
@@ -111,9 +113,19 @@ class DescriptionAdapter
         Step step = recipe.getSteps().get(stepIndex);
         holder.shortDescription.setText(step.getShortDescription());
         holder.description.setText(step.getDescription());
+        showVideoOrThumbnail(holder, step);
+    }
+
+    private void showVideoOrThumbnail(DescriptionViewHolder holder, Step step) {
         String videoUrl = step.getVideoURL();
         if (!videoUrl.isEmpty()) {
             initPlayerView(holder, videoUrl);
+            return;
+        }
+
+        String thumbnailUrl = step.getThumbnailURL();
+        if (!thumbnailUrl.isEmpty() && isImageUrl(thumbnailUrl)) {
+            initThumbnail(holder, step);
         }
     }
 
@@ -142,6 +154,18 @@ class DescriptionAdapter
         return mediaSourceFactory;
     }
 
+    private boolean isImageUrl(String url) {
+        // Dummy image url validator
+        return !url.endsWith(".mp4");
+    }
+
+    private void initThumbnail(DescriptionViewHolder holder, Step step) {
+        ImageView imageView = holder.thumbnail;
+        Picasso.get().load(step.getThumbnailURL()).into(imageView);
+        imageView.setContentDescription(step.getShortDescription());
+        imageView.setVisibility(View.VISIBLE);
+    }
+
     @Override
     public int getItemCount() {
         return recipe != null ? recipe.getSteps().size() + 1 : 0;
@@ -168,6 +192,7 @@ class DescriptionAdapter
         private TextView description;
         private PlayerView playerView;
         private SimpleExoPlayer exoPlayer;
+        private ImageView thumbnail;
 
         DescriptionViewHolder(@NonNull View itemView, int viewType) {
             super(itemView);
@@ -189,6 +214,7 @@ class DescriptionAdapter
             playerView = itemView.findViewById(R.id.playerView);
             exoPlayer = ExoPlayerFactory.newSimpleInstance(context);
             exoPlayers.add(exoPlayer);
+            thumbnail = itemView.findViewById(R.id.thumbnail);
         }
     }
 }
