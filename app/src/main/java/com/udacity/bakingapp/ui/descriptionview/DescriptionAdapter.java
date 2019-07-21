@@ -37,7 +37,6 @@ class DescriptionAdapter
     private static final int VIEW_TYPE_INGREDIENTS = 0;
     private static final int VIEW_TYPE_STEP = 1;
 
-
     private Context context;
     private Recipe recipe;
     private ProgressiveMediaSource.Factory mediaSourceFactory;
@@ -73,24 +72,38 @@ class DescriptionAdapter
     }
 
     private int getLayoutIdByViewType(int viewType) {
-        if (viewType == 0) {
-            return R.layout.ingredients;
-        } else {
-            return R.layout.step;
+        switch (viewType) {
+            case VIEW_TYPE_INGREDIENTS:
+                return R.layout.ingredients;
+            case VIEW_TYPE_STEP:
+                return R.layout.step;
         }
+        return 0;
     }
 
     @Override
     public void onBindViewHolder(@NonNull DescriptionViewHolder holder, int position) {
-        if (getItemViewType(position) == VIEW_TYPE_INGREDIENTS) {
-            fillIngredientsLayout(holder);
-        } else {
-            fillStepLayout(holder, position);
+        switch (getItemViewType(position)) {
+            case VIEW_TYPE_INGREDIENTS:
+                fillIngredientsLayoutIfEmpty(holder);
+                return;
+            case VIEW_TYPE_STEP:
+                fillStepLayout(holder, position);
         }
     }
 
-    private void fillIngredientsLayout(DescriptionViewHolder holder) {
+    private void fillIngredientsLayoutIfEmpty(DescriptionViewHolder holder) {
         ViewGroup ingredientsLayout = holder.ingredientsLayout;
+        if (isIngredientsLayoutEmpty(ingredientsLayout)) {
+            fillIngredientsLayout(ingredientsLayout);
+        }
+    }
+
+    private boolean isIngredientsLayoutEmpty(ViewGroup ingredientsLayout) {
+        return ingredientsLayout.getChildCount() == 1;
+    }
+
+    private void fillIngredientsLayout(ViewGroup ingredientsLayout) {
         for (Ingredient ingredient : recipe.getIngredients()) {
             TextView ingredientView =
                     (TextView) LayoutInflater
