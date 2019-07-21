@@ -58,7 +58,7 @@ public class DescriptionActivity extends AppCompatActivity {
     }
 
     private void initRecyclerView() {
-        RecyclerView recyclerView = findViewById(R.id.description);
+        RecyclerView recyclerView = findViewById(R.id.description_layout);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
     }
@@ -66,6 +66,7 @@ public class DescriptionActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         viewModel.getRecipe().removeObservers(this);
+        adapter.close();
         super.onDestroy();
     }
 }

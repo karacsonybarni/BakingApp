@@ -1,6 +1,7 @@
 package com.udacity.bakingapp.ui.descriptionview;
 
 import android.content.Context;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,11 +10,24 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.exoplayer2.ExoPlayerFactory;
+import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
+import com.google.android.exoplayer2.extractor.ExtractorsFactory;
+import com.google.android.exoplayer2.source.MediaSource;
+import com.google.android.exoplayer2.source.ProgressiveMediaSource;
+import com.google.android.exoplayer2.ui.PlayerView;
+import com.google.android.exoplayer2.upstream.DataSource;
+import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
+import com.google.android.exoplayer2.util.Util;
 import com.udacity.bakingapp.R;
 import com.udacity.bakingapp.data.entity.Ingredient;
 import com.udacity.bakingapp.data.entity.Recipe;
+import com.udacity.bakingapp.data.entity.Step;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 class DescriptionAdapter
         extends RecyclerView.Adapter<DescriptionAdapter.DescriptionViewHolder> {
@@ -24,9 +38,12 @@ class DescriptionAdapter
 
     private Context context;
     private Recipe recipe;
+    private ProgressiveMediaSource.Factory mediaSourceFactory;
+    private List<SimpleExoPlayer> exoPlayers;
 
     DescriptionAdapter(Context context) {
         this.context = context;
+        exoPlayers = new ArrayList<>();
     }
 
     void update(Recipe recipe) {
@@ -56,14 +73,17 @@ class DescriptionAdapter
     private int getLayoutIdByViewType(int viewType) {
         if (viewType == 0) {
             return R.layout.ingredients;
+        } else {
+            return R.layout.step;
         }
-        return 0;
     }
 
     @Override
     public void onBindViewHolder(@NonNull DescriptionViewHolder holder, int position) {
         if (getItemViewType(position) == VIEW_TYPE_INGREDIENTS) {
             fillIngredientsLayout(holder);
+        } else {
+            fillStepLayout(holder, position);
         }
     }
 
@@ -86,21 +106,89 @@ class DescriptionAdapter
                 quantity, ingredient.getMeasure(), ingredient.getName());
     }
 
+    private void fillStepLayout(DescriptionViewHolder holder, int position) {
+        int stepIndex = position - 1;
+        Step step = recipe.getSteps().get(stepIndex);
+        holder.shortDescription.setText(step.getShortDescription());
+        holder.description.setText(step.getDescription());
+        String videoUrl = step.getVideoURL();
+        if (!videoUrl.isEmpty()) {
+            initPlayerView(holder, videoUrl);
+        }
+    }
+
+    private void initPlayerView(DescriptionViewHolder holder, String videoUrl) {
+        PlayerView playerView = holder.playerView;
+        SimpleExoPlayer exoPlayer = holder.exoPlayer;
+        playerView.setPlayer(exoPlayer);
+        MediaSource mediaSource = newProgressiveMediaSource(videoUrl);
+        exoPlayer.prepare(mediaSource);
+        playerView.setVisibility(View.VISIBLE);
+    }
+
+    private MediaSource newProgressiveMediaSource(String urlString) {
+        Uri uri = Uri.parse(urlString);
+        return getMediaSourceFactory().createMediaSource(uri);
+    }
+
+    private ProgressiveMediaSource.Factory getMediaSourceFactory() {
+        if (mediaSourceFactory == null) {
+            String userAgent = Util.getUserAgent(context, "BakingApp");
+            DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(context, userAgent);
+            ExtractorsFactory extractorsFactory = new DefaultExtractorsFactory();
+            mediaSourceFactory =
+                    new ProgressiveMediaSource.Factory(dataSourceFactory, extractorsFactory);
+        }
+        return mediaSourceFactory;
+    }
+
     @Override
     public int getItemCount() {
-        return recipe != null ? 1 : 0;
+        return recipe != null ? recipe.getSteps().size() + 1 : 0;
+    }
+
+    void close() {
+        releasePlayers();
+        context = null;
+    }
+
+    private void releasePlayers() {
+        for (SimpleExoPlayer exoPlayer : exoPlayers) {
+            exoPlayer.stop();
+            exoPlayer.release();
+        }
+        exoPlayers = null;
     }
 
     class DescriptionViewHolder extends RecyclerView.ViewHolder {
 
         private ViewGroup ingredientsLayout;
 
+        private TextView shortDescription;
+        private TextView description;
+        private PlayerView playerView;
+        private SimpleExoPlayer exoPlayer;
+
         DescriptionViewHolder(@NonNull View itemView, int viewType) {
             super(itemView);
 
             if (viewType == VIEW_TYPE_INGREDIENTS) {
-                ingredientsLayout = itemView.findViewById(R.id.ingredients);
+                initIngredientsLayout();
+            } else {
+                initStepLayout();
             }
+        }
+
+        private void initIngredientsLayout() {
+            ingredientsLayout = itemView.findViewById(R.id.ingredients);
+        }
+
+        private void initStepLayout() {
+            shortDescription = itemView.findViewById(R.id.shortDescription);
+            description = itemView.findViewById(R.id.description);
+            playerView = itemView.findViewById(R.id.playerView);
+            exoPlayer = ExoPlayerFactory.newSimpleInstance(context);
+            exoPlayers.add(exoPlayer);
         }
     }
 }

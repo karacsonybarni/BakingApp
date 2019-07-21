@@ -6,8 +6,12 @@
     <dimen name="recipe_name_textSize">20sp</dimen>
     <dimen name="recipe_name_margin">12dp</dimen>
 
-    <dimen name="description_layout_paddingHorizontal">20dp</dimen>
-    <dimen name="description_item_marginVertical">8dp</dimen>
-    <dimen name="ingredients_title_textSize">18sp</dimen>
+    <dimen name="description_layout_padding">18dp</dimen>
+    <dimen name="description_item_marginVertical">24dp</dimen>
+    <dimen name="ingredients_title_textSize">20sp</dimen>
     <dimen name="ingredients_title_marginBottom">4dp</dimen>
+    <dimen name="ingredient_textSize">16sp</dimen>
+    <dimen name="short_description_textSize">20sp</dimen>
+    <dimen name="description_textSize">16sp</dimen>
+    <dimen name="playerView_height">216dp</dimen>
 </resources>

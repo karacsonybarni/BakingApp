@@ -3,9 +3,9 @@
     android:id="@+id/ingredients"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:layout_marginTop="@dimen/description_item_marginVertical"
-    android:layout_marginBottom="@dimen/description_item_marginVertical">
+    android:layout_marginTop="@dimen/description_layout_padding"
+    android:layout_marginBottom="@dimen/description_item_marginVertical"
+    android:orientation="vertical">
 
     <TextView
         android:layout_width="wrap_content"
