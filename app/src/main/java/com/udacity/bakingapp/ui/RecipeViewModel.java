@@ -1,4 +1,4 @@
-package com.udacity.bakingapp.ui.descriptionview;
+package com.udacity.bakingapp.ui;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
@@ -6,15 +6,15 @@ import androidx.lifecycle.ViewModel;
 import com.udacity.bakingapp.data.Repository;
 import com.udacity.bakingapp.data.entity.Recipe;
 
-class DescriptionActivityViewModel extends ViewModel {
+public class RecipeViewModel extends ViewModel {
 
     private LiveData<Recipe> recipe;
 
-    DescriptionActivityViewModel(Repository repository, long id) {
+    RecipeViewModel(Repository repository, long id) {
         recipe = repository.getRecipe(id);
     }
 
-    LiveData<Recipe> getRecipe() {
+    public LiveData<Recipe> getRecipe() {
         return recipe;
     }
 }

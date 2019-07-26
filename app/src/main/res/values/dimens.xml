@@ -7,11 +7,15 @@
     <dimen name="recipe_name_margin">12dp</dimen>
 
     <dimen name="description_layout_padding">18dp</dimen>
-    <dimen name="description_item_marginVertical">24dp</dimen>
     <dimen name="ingredients_title_textSize">20sp</dimen>
     <dimen name="ingredients_title_marginBottom">4dp</dimen>
+    <dimen name="ingredients_list_marginBottom">18dp</dimen>
     <dimen name="ingredient_textSize">16sp</dimen>
+    <dimen name="short_description_height">48dp</dimen>
     <dimen name="short_description_textSize">20sp</dimen>
+
+    <dimen name="step_layout_padding">18dp</dimen>
+    <dimen name="description_marginTop">18dp</dimen>
     <dimen name="description_textSize">16sp</dimen>
-    <dimen name="playerView_height">216dp</dimen>
+    <dimen name="navigation_button_margin">8dp</dimen>
 </resources>

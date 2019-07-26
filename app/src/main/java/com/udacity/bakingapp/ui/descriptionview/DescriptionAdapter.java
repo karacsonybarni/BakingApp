@@ -1,35 +1,22 @@
 package com.udacity.bakingapp.ui.descriptionview;
 
 import android.content.Context;
-import android.net.Uri;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.exoplayer2.ExoPlayerFactory;
-import com.google.android.exoplayer2.SimpleExoPlayer;
-import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
-import com.google.android.exoplayer2.extractor.ExtractorsFactory;
-import com.google.android.exoplayer2.source.MediaSource;
-import com.google.android.exoplayer2.source.ProgressiveMediaSource;
-import com.google.android.exoplayer2.ui.PlayerView;
-import com.google.android.exoplayer2.upstream.DataSource;
-import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
-import com.google.android.exoplayer2.util.Util;
-import com.squareup.picasso.Picasso;
 import com.udacity.bakingapp.R;
 import com.udacity.bakingapp.data.entity.Ingredient;
 import com.udacity.bakingapp.data.entity.Recipe;
 import com.udacity.bakingapp.data.entity.Step;
+import com.udacity.bakingapp.ui.stepview.StepActivity;
 
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.List;
 
 class DescriptionAdapter
         extends RecyclerView.Adapter<DescriptionAdapter.DescriptionViewHolder> {
@@ -39,12 +26,9 @@ class DescriptionAdapter
 
     private Context context;
     private Recipe recipe;
-    private ProgressiveMediaSource.Factory mediaSourceFactory;
-    private List<SimpleExoPlayer> exoPlayers;
 
     DescriptionAdapter(Context context) {
         this.context = context;
-        exoPlayers = new ArrayList<>();
     }
 
     void update(Recipe recipe) {
@@ -76,7 +60,7 @@ class DescriptionAdapter
             case VIEW_TYPE_INGREDIENTS:
                 return R.layout.ingredients;
             case VIEW_TYPE_STEP:
-                return R.layout.step;
+                return R.layout.short_description;
         }
         return 0;
     }
@@ -122,61 +106,19 @@ class DescriptionAdapter
     }
 
     private void fillStepLayout(DescriptionViewHolder holder, int position) {
-        int stepIndex = position - 1;
-        Step step = recipe.getSteps().get(stepIndex);
+        int stepPosition = position - 1;
+        Step step = recipe.getSteps().get(stepPosition);
         holder.shortDescription.setText(step.getShortDescription());
-        holder.description.setText(step.getDescription());
-        showVideoOrThumbnail(holder, step);
+        holder.itemView.setOnClickListener(getOnClickListener(stepPosition));
     }
 
-    private void showVideoOrThumbnail(DescriptionViewHolder holder, Step step) {
-        String videoUrl = step.getVideoURL();
-        if (!videoUrl.isEmpty()) {
-            initPlayerView(holder, videoUrl);
-            return;
-        }
-
-        String thumbnailUrl = step.getThumbnailURL();
-        if (!thumbnailUrl.isEmpty() && isImageUrl(thumbnailUrl)) {
-            initThumbnail(holder, step);
-        }
-    }
-
-    private void initPlayerView(DescriptionViewHolder holder, String videoUrl) {
-        PlayerView playerView = holder.playerView;
-        SimpleExoPlayer exoPlayer = holder.exoPlayer;
-        playerView.setPlayer(exoPlayer);
-        MediaSource mediaSource = newProgressiveMediaSource(videoUrl);
-        exoPlayer.prepare(mediaSource);
-        playerView.setVisibility(View.VISIBLE);
-    }
-
-    private MediaSource newProgressiveMediaSource(String urlString) {
-        Uri uri = Uri.parse(urlString);
-        return getMediaSourceFactory().createMediaSource(uri);
-    }
-
-    private ProgressiveMediaSource.Factory getMediaSourceFactory() {
-        if (mediaSourceFactory == null) {
-            String userAgent = Util.getUserAgent(context, "BakingApp");
-            DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(context, userAgent);
-            ExtractorsFactory extractorsFactory = new DefaultExtractorsFactory();
-            mediaSourceFactory =
-                    new ProgressiveMediaSource.Factory(dataSourceFactory, extractorsFactory);
-        }
-        return mediaSourceFactory;
-    }
-
-    private boolean isImageUrl(String url) {
-        // Dummy image url validator
-        return !url.endsWith(".mp4");
-    }
-
-    private void initThumbnail(DescriptionViewHolder holder, Step step) {
-        ImageView imageView = holder.thumbnail;
-        Picasso.get().load(step.getThumbnailURL()).into(imageView);
-        imageView.setContentDescription(step.getShortDescription());
-        imageView.setVisibility(View.VISIBLE);
+    private View.OnClickListener getOnClickListener(int position) {
+        return view -> {
+            Intent intent = new Intent(context, StepActivity.class);
+            intent.putExtra(StepActivity.RECIPE_ID_EXTRA, recipe.getId());
+            intent.putExtra(StepActivity.STEP_POSITION_EXTRA, position);
+            context.startActivity(intent);
+        };
     }
 
     @Override
@@ -184,28 +126,11 @@ class DescriptionAdapter
         return recipe != null ? recipe.getSteps().size() + 1 : 0;
     }
 
-    void close() {
-        releasePlayers();
-        context = null;
-    }
-
-    private void releasePlayers() {
-        for (SimpleExoPlayer exoPlayer : exoPlayers) {
-            exoPlayer.stop();
-            exoPlayer.release();
-        }
-        exoPlayers = null;
-    }
-
     class DescriptionViewHolder extends RecyclerView.ViewHolder {
 
         private ViewGroup ingredientsLayout;
 
         private TextView shortDescription;
-        private TextView description;
-        private PlayerView playerView;
-        private SimpleExoPlayer exoPlayer;
-        private ImageView thumbnail;
 
         DescriptionViewHolder(@NonNull View itemView, int viewType) {
             super(itemView);
@@ -222,12 +147,7 @@ class DescriptionAdapter
         }
 
         private void initStepLayout() {
-            shortDescription = itemView.findViewById(R.id.shortDescription);
-            description = itemView.findViewById(R.id.description);
-            playerView = itemView.findViewById(R.id.playerView);
-            exoPlayer = ExoPlayerFactory.newSimpleInstance(context);
-            exoPlayers.add(exoPlayer);
-            thumbnail = itemView.findViewById(R.id.thumbnail);
+            shortDescription = (TextView) itemView;
         }
     }
 }

@@ -4,15 +4,14 @@ import android.os.Bundle;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.udacity.bakingapp.R;
-import com.udacity.bakingapp.data.Repository;
 import com.udacity.bakingapp.data.entity.Recipe;
-import com.udacity.bakingapp.util.InjectorUtils;
+import com.udacity.bakingapp.ui.RecipeViewModel;
+import com.udacity.bakingapp.ui.RecipeViewModelFactory;
 
 import java.util.Objects;
 
@@ -20,28 +19,21 @@ public class DescriptionActivity extends AppCompatActivity {
 
     public static final String RECIPE_ID_EXTRA = "recipeId";
 
-    private DescriptionActivityViewModel viewModel;
+    private RecipeViewModel viewModel;
     private DescriptionAdapter adapter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_description);
-        viewModel = getViewModel(getRecipeId());
+        viewModel = RecipeViewModelFactory.getViewModel(this, getRecipeId());
         adapter = new DescriptionAdapter(this);
         updateRecipe();
         initRecyclerView();
     }
 
     private long getRecipeId() {
-        return Objects.requireNonNull(getIntent().getExtras()).getLong(RECIPE_ID_EXTRA);
-    }
-
-    private DescriptionActivityViewModel getViewModel(long id) {
-        Repository repository = InjectorUtils.getRepository(this);
-        DescriptionViewModelFactory factory = new DescriptionViewModelFactory(repository, id);
-        ViewModelProvider viewModelProvider = ViewModelProviders.of(this, factory);
-        return viewModelProvider.get(DescriptionActivityViewModel.class);
+        return getIntent().getLongExtra(RECIPE_ID_EXTRA, -1);
     }
 
     private void updateRecipe() {
@@ -60,13 +52,15 @@ public class DescriptionActivity extends AppCompatActivity {
     private void initRecyclerView() {
         RecyclerView recyclerView = findViewById(R.id.description_layout);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        DividerItemDecoration divider =
+                new DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
+        recyclerView.addItemDecoration(divider);
         recyclerView.setAdapter(adapter);
     }
 
     @Override
     protected void onDestroy() {
         viewModel.getRecipe().removeObservers(this);
-        adapter.close();
         super.onDestroy();
     }
 }

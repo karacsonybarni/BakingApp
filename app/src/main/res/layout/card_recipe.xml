@@ -4,14 +4,15 @@
     android:layout_height="wrap_content"
     android:layout_margin="@dimen/card_margin"
     android:clickable="true"
-    android:focusable="true">
+    android:focusable="true"
+    android:foreground="?selectableItemBackground">
 
     <TextView
         android:id="@+id/name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:textSize="@dimen/recipe_name_textSize"
-        android:layout_margin="@dimen/recipe_name_margin"/>
+        android:layout_margin="@dimen/recipe_name_margin"
+        android:textSize="@dimen/recipe_name_textSize" />
 
 </androidx.cardview.widget.CardView>

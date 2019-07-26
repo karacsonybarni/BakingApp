@@ -2,6 +2,4 @@
 <androidx.recyclerview.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/description_layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingLeft="@dimen/description_layout_padding"
-    android:paddingRight="@dimen/description_layout_padding"/>
+    android:layout_height="match_parent" />
