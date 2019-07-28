@@ -11,8 +11,8 @@
     <dimen name="ingredients_title_marginBottom">4dp</dimen>
     <dimen name="ingredients_list_marginBottom">18dp</dimen>
     <dimen name="ingredient_textSize">16sp</dimen>
-    <dimen name="short_description_height">48dp</dimen>
     <dimen name="short_description_textSize">20sp</dimen>
+    <dimen name="short_description_paddingVertical">12dp</dimen>
 
     <dimen name="step_layout_padding">18dp</dimen>
     <dimen name="description_marginTop">18dp</dimen>
