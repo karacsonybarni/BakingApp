@@ -79,18 +79,11 @@ public class StepActivity extends AppCompatActivity {
     }
 
     private void updateSystemUiVisibilityFlags() {
-        View decorView = getWindow().getDecorView();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            decorView
-                    .setSystemUiVisibility(
-                            View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                                    | View.SYSTEM_UI_FLAG_FULLSCREEN
-                                    | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
-        } else {
-            decorView
-                    .setSystemUiVisibility(
-                            View.SYSTEM_UI_FLAG_LOW_PROFILE);
-        }
+        getWindow().getDecorView()
+                .setSystemUiVisibility(
+                        View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                                | View.SYSTEM_UI_FLAG_FULLSCREEN
+                                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
     }
 
     private void hideActionBar() {
