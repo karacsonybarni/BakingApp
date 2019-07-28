@@ -1,21 +1,13 @@
 package com.udacity.bakingapp.ui.stepview;
 
 import android.content.res.Configuration;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.constraintlayout.widget.ConstraintSet;
 
-import com.google.android.exoplayer2.ExoPlayer;
-import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.android.material.button.MaterialButton;
-import com.squareup.picasso.Picasso;
 import com.udacity.bakingapp.R;
 import com.udacity.bakingapp.data.entity.Recipe;
 import com.udacity.bakingapp.data.entity.Step;
@@ -32,15 +24,9 @@ public class StepActivity extends AppCompatActivity {
 
     private RecipeViewModel viewModel;
     private Recipe recipe;
+    private StepFragment stepFragment;
     private int stepPosition;
-    private Step step;
-    private PlayerView playerView;
-    private ImageView thumbnailView;
 
-    @Nullable
-    private ConstraintLayout constraintLayout;
-    @Nullable
-    private TextView descriptionView;
     @Nullable
     private MaterialButton prevButton;
     @Nullable
@@ -49,22 +35,53 @@ public class StepActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_step);
-        enterFullscreenIfInLandscape();
-        initViews();
-        initPlayer();
         viewModel = RecipeViewModelFactory.getViewModel(this, getRecipeId());
         stepPosition = getStepPosition(savedInstanceState);
+        setContentView(R.layout.activity_step);
+        initViews();
+        initStepFragment();
+        enterFullscreenIfInLandscape();
         updateRecipe();
     }
 
+    private long getRecipeId() {
+        return getIntent().getLongExtra(RECIPE_ID, -1);
+    }
+
+    private int getStepPosition(Bundle savedInstanceState) {
+        int stepPosition = -1;
+        if (savedInstanceState != null) {
+            stepPosition = savedInstanceState.getInt(STEP_POSITION, -1);
+        }
+        if (stepPosition == -1) {
+            stepPosition = getIntent().getIntExtra(STEP_POSITION, -1);
+        }
+        return stepPosition;
+    }
+
     private void initViews() {
-        constraintLayout = findViewById(R.id.stepLayout);
-        playerView = findViewById(R.id.playerView);
-        thumbnailView = findViewById(R.id.thumbnail);
-        descriptionView = findViewById(R.id.description);
         prevButton = findViewById(R.id.previousButton);
         nextButton = findViewById(R.id.nextButton);
+    }
+
+    private void initStepFragment() {
+        stepFragment =
+                (StepFragment) getSupportFragmentManager()
+                        .findFragmentById(R.id.stepFragmentContainer);
+        if (stepFragment == null) {
+            stepFragment = new StepFragment();
+            stepFragment.setStepPosition(stepPosition);
+            addStepFragment();
+        } else {
+            stepFragment.setStepPosition(stepPosition);
+        }
+    }
+
+    private void addStepFragment() {
+        getSupportFragmentManager()
+                .beginTransaction()
+                .add(R.id.stepFragmentContainer, stepFragment)
+                .commit();
     }
 
     private void enterFullscreenIfInLandscape() {
@@ -90,26 +107,6 @@ public class StepActivity extends AppCompatActivity {
         Objects.requireNonNull(getSupportActionBar()).hide();
     }
 
-    private void initPlayer() {
-        ExoPlayer exoPlayer = MediaProvider.getExoPlayer(this);
-        playerView.setPlayer(exoPlayer);
-    }
-
-    private long getRecipeId() {
-        return getIntent().getLongExtra(RECIPE_ID, -1);
-    }
-
-    private int getStepPosition(Bundle savedInstanceState) {
-        int stepPosition = -1;
-        if (savedInstanceState != null) {
-            stepPosition = savedInstanceState.getInt(STEP_POSITION, -1);
-        }
-        if (stepPosition == -1) {
-            stepPosition = getIntent().getIntExtra(STEP_POSITION, -1);
-        }
-        return stepPosition;
-    }
-
     private void updateRecipe() {
         viewModel.getRecipe().observe(this, this::updateRecipe);
     }
@@ -117,88 +114,11 @@ public class StepActivity extends AppCompatActivity {
     private void updateRecipe(Recipe recipe) {
         this.recipe = recipe;
         setTitle();
-        updateStep();
-    }
-
-    private void updateStep() {
-        step = recipe.getSteps().get(stepPosition);
-        populateViews();
+        updateButtons();
     }
 
     private void setTitle() {
         Objects.requireNonNull(getSupportActionBar()).setTitle(recipe.getName());
-    }
-
-    private void populateViews() {
-        fillDescription();
-        showVideoOrThumbnail();
-        updateButtons();
-    }
-
-    private void fillDescription() {
-        if (descriptionView != null) {
-            descriptionView.setText(step.getDescription());
-        }
-    }
-
-    private void showVideoOrThumbnail() {
-        String videoUrl = step.getVideoURL();
-        if (!videoUrl.isEmpty()) {
-            MediaProvider.updateMediaSource(this, videoUrl);
-            showPlayerView();
-            return;
-        } else {
-            playerView.setVisibility(View.GONE);
-        }
-
-        String thumbnailUrl = step.getThumbnailURL();
-        if (!thumbnailUrl.isEmpty() && isThumbnailUrlValid()) {
-            updateThumbnail();
-            showThumbnail();
-        } else {
-            if (isInLandscapeMode()) {
-                showThumbnailError();
-            } else {
-                thumbnailView.setVisibility(View.GONE);
-            }
-        }
-    }
-
-    private void showPlayerView() {
-        playerView.setVisibility(View.VISIBLE);
-        alignDescriptionUnder(R.id.playerView);
-    }
-
-    private void alignDescriptionUnder(int mediaViewId) {
-        if (constraintLayout == null) {
-            return;
-        }
-        ConstraintSet constraintSet = new ConstraintSet();
-        constraintSet.clone(constraintLayout);
-        constraintSet.connect(
-                R.id.description, ConstraintSet.TOP,
-                mediaViewId, ConstraintSet.BOTTOM);
-        constraintSet.applyTo(constraintLayout);
-    }
-
-    private boolean isThumbnailUrlValid() {
-        // Dummy thumbnail url validator
-        return !step.getThumbnailURL().endsWith(".mp4");
-    }
-
-    private void updateThumbnail() {
-        Picasso.get().load(step.getThumbnailURL()).into(thumbnailView);
-        thumbnailView.setContentDescription(step.getShortDescription());
-    }
-
-    private void showThumbnail() {
-        thumbnailView.setVisibility(View.VISIBLE);
-        alignDescriptionUnder(R.id.thumbnail);
-    }
-
-    private void showThumbnailError() {
-        thumbnailView.setImageResource(R.drawable.ic_broken_image_black_500);
-        thumbnailView.setVisibility(View.VISIBLE);
     }
 
     private void updateButtons() {
@@ -224,7 +144,6 @@ public class StepActivity extends AppCompatActivity {
         return view -> {
             stepPosition--;
             updateStep();
-            MediaProvider.stopPlayer();
         };
     }
 
@@ -232,8 +151,13 @@ public class StepActivity extends AppCompatActivity {
         return view -> {
             stepPosition++;
             updateStep();
-            MediaProvider.stopPlayer();
         };
+    }
+
+    private void updateStep() {
+        stepFragment.setStepPosition(stepPosition);
+        stepFragment.updateViews();
+        updateButtons();
     }
 
     @Override
@@ -246,5 +170,11 @@ public class StepActivity extends AppCompatActivity {
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt(STEP_POSITION, stepPosition);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        viewModel.getRecipe().removeObservers(this);
     }
 }

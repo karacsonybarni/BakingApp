@@ -3,9 +3,11 @@ package com.udacity.bakingapp.ui.recipesview;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.res.Configuration;
 import android.os.Bundle;
 
 import com.udacity.bakingapp.R;
@@ -47,8 +49,21 @@ public class RecipesActivity extends AppCompatActivity {
 
     private void initRecyclerView() {
         RecyclerView recyclerView = findViewById(R.id.recipes);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setLayoutManager(getLayoutManager());
         recyclerView.setAdapter(adapter);
+    }
+
+    private RecyclerView.LayoutManager getLayoutManager() {
+        if (isTablet()) {
+            return new GridLayoutManager(this, 3);
+        } else {
+            return new LinearLayoutManager(this);
+        }
+    }
+
+    private boolean isTablet() {
+        Configuration config = getResources().getConfiguration();
+        return config.smallestScreenWidthDp >= 600;
     }
 
     @Override
