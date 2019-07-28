@@ -115,8 +115,8 @@ class DescriptionAdapter
     private View.OnClickListener getOnClickListener(int position) {
         return view -> {
             Intent intent = new Intent(context, StepActivity.class);
-            intent.putExtra(StepActivity.RECIPE_ID_EXTRA, recipe.getId());
-            intent.putExtra(StepActivity.STEP_POSITION_EXTRA, position);
+            intent.putExtra(StepActivity.RECIPE_ID, recipe.getId());
+            intent.putExtra(StepActivity.STEP_POSITION, position);
             context.startActivity(intent);
         };
     }

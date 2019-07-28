@@ -1,6 +1,7 @@
 package com.udacity.bakingapp.ui.stepview;
 
-import android.net.Uri;
+import android.content.res.Configuration;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
@@ -12,15 +13,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
 
 import com.google.android.exoplayer2.ExoPlayer;
-import com.google.android.exoplayer2.ExoPlayerFactory;
-import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
-import com.google.android.exoplayer2.extractor.ExtractorsFactory;
-import com.google.android.exoplayer2.source.MediaSource;
-import com.google.android.exoplayer2.source.ProgressiveMediaSource;
 import com.google.android.exoplayer2.ui.PlayerView;
-import com.google.android.exoplayer2.upstream.DataSource;
-import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
-import com.google.android.exoplayer2.util.Util;
 import com.google.android.material.button.MaterialButton;
 import com.squareup.picasso.Picasso;
 import com.udacity.bakingapp.R;
@@ -34,34 +27,39 @@ import java.util.Objects;
 
 public class StepActivity extends AppCompatActivity {
 
-    public static final String RECIPE_ID_EXTRA = "recipeId";
-    public static final String STEP_POSITION_EXTRA = "stepPosition";
+    public static final String RECIPE_ID = "recipeId";
+    public static final String STEP_POSITION = "stepPosition";
 
     private RecipeViewModel viewModel;
     private Recipe recipe;
     private int stepPosition;
     private Step step;
-    private ExoPlayer exoPlayer;
-    private ConstraintLayout rootLayout;
     private PlayerView playerView;
     private ImageView thumbnailView;
+
+    @Nullable
+    private ConstraintLayout constraintLayout;
+    @Nullable
     private TextView descriptionView;
+    @Nullable
     private MaterialButton prevButton;
+    @Nullable
     private MaterialButton nextButton;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_step);
+        enterFullscreenIfInLandscape();
         initViews();
         initPlayer();
         viewModel = RecipeViewModelFactory.getViewModel(this, getRecipeId());
-        stepPosition = getStepPosition();
+        stepPosition = getStepPosition(savedInstanceState);
         updateRecipe();
     }
 
     private void initViews() {
-        rootLayout = findViewById(R.id.stepLayout);
+        constraintLayout = findViewById(R.id.stepLayout);
         playerView = findViewById(R.id.playerView);
         thumbnailView = findViewById(R.id.thumbnail);
         descriptionView = findViewById(R.id.description);
@@ -69,17 +67,54 @@ public class StepActivity extends AppCompatActivity {
         nextButton = findViewById(R.id.nextButton);
     }
 
+    private void enterFullscreenIfInLandscape() {
+        if (isInLandscapeMode()) {
+            hideActionBar();
+            updateSystemUiVisibilityFlags();
+        }
+    }
+
+    private boolean isInLandscapeMode() {
+        return getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
+    }
+
+    private void updateSystemUiVisibilityFlags() {
+        View decorView = getWindow().getDecorView();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            decorView
+                    .setSystemUiVisibility(
+                            View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                                    | View.SYSTEM_UI_FLAG_FULLSCREEN
+                                    | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+        } else {
+            decorView
+                    .setSystemUiVisibility(
+                            View.SYSTEM_UI_FLAG_LOW_PROFILE);
+        }
+    }
+
+    private void hideActionBar() {
+        Objects.requireNonNull(getSupportActionBar()).hide();
+    }
+
     private void initPlayer() {
-        exoPlayer = ExoPlayerFactory.newSimpleInstance(this);
+        ExoPlayer exoPlayer = MediaProvider.getExoPlayer(this);
         playerView.setPlayer(exoPlayer);
     }
 
     private long getRecipeId() {
-        return getIntent().getLongExtra(RECIPE_ID_EXTRA, -1);
+        return getIntent().getLongExtra(RECIPE_ID, -1);
     }
 
-    private int getStepPosition() {
-        return getIntent().getIntExtra(STEP_POSITION_EXTRA, -1);
+    private int getStepPosition(Bundle savedInstanceState) {
+        int stepPosition = -1;
+        if (savedInstanceState != null) {
+            stepPosition = savedInstanceState.getInt(STEP_POSITION, -1);
+        }
+        if (stepPosition == -1) {
+            stepPosition = getIntent().getIntExtra(STEP_POSITION, -1);
+        }
+        return stepPosition;
     }
 
     private void updateRecipe() {
@@ -102,14 +137,21 @@ public class StepActivity extends AppCompatActivity {
     }
 
     private void populateViews() {
-        descriptionView.setText(step.getDescription());
+        fillDescription();
         showVideoOrThumbnail();
         updateButtons();
     }
 
+    private void fillDescription() {
+        if (descriptionView != null) {
+            descriptionView.setText(step.getDescription());
+        }
+    }
+
     private void showVideoOrThumbnail() {
-        if (!step.getVideoURL().isEmpty()) {
-            updatePlayerView();
+        String videoUrl = step.getVideoURL();
+        if (!videoUrl.isEmpty()) {
+            MediaProvider.updateMediaSource(this, videoUrl);
             showPlayerView();
             return;
         } else {
@@ -121,27 +163,12 @@ public class StepActivity extends AppCompatActivity {
             updateThumbnail();
             showThumbnail();
         } else {
-            thumbnailView.setVisibility(View.GONE);
+            if (isInLandscapeMode()) {
+                showThumbnailError();
+            } else {
+                thumbnailView.setVisibility(View.GONE);
+            }
         }
-    }
-
-    private void updatePlayerView() {
-        MediaSource mediaSource = newProgressiveMediaSource();
-        exoPlayer.prepare(mediaSource);
-    }
-
-    private MediaSource newProgressiveMediaSource() {
-        Uri uri = Uri.parse(step.getVideoURL());
-        return newMediaSourceFactory().createMediaSource(uri);
-    }
-
-    private ProgressiveMediaSource.Factory newMediaSourceFactory() {
-        String userAgent = Util.getUserAgent(this, "BakingApp");
-        DataSource.Factory dataSourceFactory =
-                new DefaultDataSourceFactory(this, userAgent);
-        ExtractorsFactory extractorsFactory =
-                new DefaultExtractorsFactory();
-        return new ProgressiveMediaSource.Factory(dataSourceFactory, extractorsFactory);
     }
 
     private void showPlayerView() {
@@ -150,12 +177,15 @@ public class StepActivity extends AppCompatActivity {
     }
 
     private void alignDescriptionUnder(int mediaViewId) {
+        if (constraintLayout == null) {
+            return;
+        }
         ConstraintSet constraintSet = new ConstraintSet();
-        constraintSet.clone(rootLayout);
+        constraintSet.clone(constraintLayout);
         constraintSet.connect(
                 R.id.description, ConstraintSet.TOP,
                 mediaViewId, ConstraintSet.BOTTOM);
-        constraintSet.applyTo(rootLayout);
+        constraintSet.applyTo(constraintLayout);
     }
 
     private boolean isThumbnailUrlValid() {
@@ -173,7 +203,15 @@ public class StepActivity extends AppCompatActivity {
         alignDescriptionUnder(R.id.thumbnail);
     }
 
+    private void showThumbnailError() {
+        thumbnailView.setImageResource(R.drawable.ic_broken_image_black_500);
+        thumbnailView.setVisibility(View.VISIBLE);
+    }
+
     private void updateButtons() {
+        if (prevButton == null || nextButton == null) {
+            return;
+        }
         List<Step> steps = recipe.getSteps();
         if (stepPosition == 0) {
             prevButton.setEnabled(false);
@@ -193,6 +231,7 @@ public class StepActivity extends AppCompatActivity {
         return view -> {
             stepPosition--;
             updateStep();
+            MediaProvider.stopPlayer();
         };
     }
 
@@ -200,15 +239,19 @@ public class StepActivity extends AppCompatActivity {
         return view -> {
             stepPosition++;
             updateStep();
+            MediaProvider.stopPlayer();
         };
     }
 
     @Override
-    protected void onDestroy() {
-        if (exoPlayer != null) {
-            exoPlayer.stop();
-            exoPlayer.release();
-        }
-        super.onDestroy();
+    public void onBackPressed() {
+        super.onBackPressed();
+        MediaProvider.stopPlayer();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(STEP_POSITION, stepPosition);
     }
 }
