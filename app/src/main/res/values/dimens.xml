@@ -6,10 +6,11 @@
     <dimen name="recipe_name_textSize">20sp</dimen>
     <dimen name="recipe_name_margin">12dp</dimen>
 
+    <dimen name="step_list_width">300dp</dimen>
     <dimen name="description_layout_padding">18dp</dimen>
     <dimen name="ingredients_title_textSize">20sp</dimen>
     <dimen name="ingredients_title_marginBottom">4dp</dimen>
-    <dimen name="ingredients_list_marginBottom">18dp</dimen>
+    <dimen name="ingredients_list_paddingBottom">18dp</dimen>
     <dimen name="ingredient_textSize">16sp</dimen>
     <dimen name="short_description_textSize">20sp</dimen>
     <dimen name="short_description_paddingVertical">12dp</dimen>

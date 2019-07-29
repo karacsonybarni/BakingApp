@@ -3,8 +3,9 @@
     android:id="@+id/ingredients"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="@dimen/description_layout_padding"
-    android:layout_marginBottom="@dimen/ingredients_list_marginBottom"
+    android:paddingTop="@dimen/description_layout_padding"
+    android:paddingBottom="@dimen/ingredients_list_paddingBottom"
+    android:background="@color/ingredients_background"
     android:orientation="vertical"
     android:paddingLeft="@dimen/description_layout_padding"
     android:paddingRight="@dimen/description_layout_padding">

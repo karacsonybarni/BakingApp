@@ -6,4 +6,6 @@
 
     <color name="black">#000000</color>
     <color name="white">#FFFFFF</color>
+
+    <color name="ingredients_background">#E0F2F1</color>
 </resources>

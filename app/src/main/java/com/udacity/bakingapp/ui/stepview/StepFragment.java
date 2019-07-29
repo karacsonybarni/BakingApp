@@ -1,6 +1,6 @@
 package com.udacity.bakingapp.ui.stepview;
 
-import android.content.res.Configuration;
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,6 +23,7 @@ import com.udacity.bakingapp.R;
 import com.udacity.bakingapp.data.entity.Recipe;
 import com.udacity.bakingapp.data.entity.Step;
 import com.udacity.bakingapp.ui.RecipeViewModel;
+import com.udacity.bakingapp.util.ConfigurationUtils;
 
 import java.util.Objects;
 
@@ -58,6 +59,11 @@ public class StepFragment extends Fragment {
     }
 
     @NonNull
+    private Context getNonNullContext() {
+        return Objects.requireNonNull(getContext());
+    }
+
+    @NonNull
     private FragmentActivity getNonNullActivity() {
         return Objects.requireNonNull(getActivity());
     }
@@ -71,10 +77,6 @@ public class StepFragment extends Fragment {
         playerView = rootView.findViewById(R.id.playerView);
         thumbnailView = rootView.findViewById(R.id.thumbnail);
         descriptionView = rootView.findViewById(R.id.description);
-    }
-
-    private boolean isInLandscapeMode() {
-        return getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
     }
 
     private void initPlayer() {
@@ -122,7 +124,7 @@ public class StepFragment extends Fragment {
             updateThumbnail();
             showThumbnail();
         } else {
-            if (isInLandscapeMode()) {
+            if (shouldShowThumbnailError()) {
                 showThumbnailError();
             } else {
                 thumbnailView.setVisibility(View.GONE);
@@ -131,6 +133,7 @@ public class StepFragment extends Fragment {
     }
 
     private void showPlayerView() {
+        thumbnailView.setVisibility(View.GONE);
         playerView.setVisibility(View.VISIBLE);
         alignDescriptionUnder(R.id.playerView);
     }
@@ -150,7 +153,7 @@ public class StepFragment extends Fragment {
 
     @Nullable
     private ConstraintLayout getConstraintLayout() {
-        return rootView instanceof ConstraintLayout ? (ConstraintLayout) rootView : null;
+        return getNonNullActivity().findViewById(R.id.stepLayout);
     }
 
     private boolean isThumbnailUrlValid() {
@@ -164,8 +167,15 @@ public class StepFragment extends Fragment {
     }
 
     private void showThumbnail() {
+        playerView.setVisibility(View.GONE);
         thumbnailView.setVisibility(View.VISIBLE);
         alignDescriptionUnder(R.id.thumbnail);
+    }
+
+    private boolean shouldShowThumbnailError() {
+        Context context = getNonNullContext();
+        return !ConfigurationUtils.isTablet(context)
+                && ConfigurationUtils.isInLandscapeMode(context);
     }
 
     private void showThumbnailError() {
@@ -173,11 +183,11 @@ public class StepFragment extends Fragment {
         thumbnailView.setVisibility(View.VISIBLE);
     }
 
-    void setStepPosition(int stepPosition) {
+    public void setStepPosition(int stepPosition) {
         this.stepPosition = stepPosition;
     }
 
-    void updateViews() {
+    public void updateViews() {
         MediaProvider.stopPlayer();
         updateStep();
     }

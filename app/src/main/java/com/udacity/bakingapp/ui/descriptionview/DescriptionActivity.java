@@ -1,5 +1,6 @@
 package com.udacity.bakingapp.ui.descriptionview;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
@@ -9,21 +10,29 @@ import com.udacity.bakingapp.R;
 import com.udacity.bakingapp.data.entity.Recipe;
 import com.udacity.bakingapp.ui.RecipeViewModel;
 import com.udacity.bakingapp.ui.RecipeViewModelFactory;
+import com.udacity.bakingapp.ui.stepview.StepActivity;
+import com.udacity.bakingapp.util.ConfigurationUtils;
 
 import java.util.Objects;
 
-public class DescriptionActivity extends AppCompatActivity {
+public class DescriptionActivity extends AppCompatActivity implements OnSelectionListener {
 
     public static final String RECIPE_ID_EXTRA = "recipeId";
 
+    private long recipeId;
     private RecipeViewModel viewModel;
+
+    @Nullable
+    private TwoPaneDescriptionActivityDelegate twoPaneDelegate;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        viewModel = RecipeViewModelFactory.getViewModel(this, getRecipeId());
+        recipeId = getRecipeId();
+        viewModel = RecipeViewModelFactory.getViewModel(this, recipeId);
         setContentView(R.layout.activity_description);
         updateRecipe();
+        setupFragmentsIfTablet(savedInstanceState);
     }
 
     private long getRecipeId() {
@@ -40,6 +49,33 @@ public class DescriptionActivity extends AppCompatActivity {
 
     private void setTitle(String title) {
         Objects.requireNonNull(getSupportActionBar()).setTitle(title);
+    }
+
+    private void setupFragmentsIfTablet(Bundle savedInstanceState) {
+        if (ConfigurationUtils.isTablet(this)) {
+            twoPaneDelegate = new TwoPaneDescriptionActivityDelegate(this);
+            twoPaneDelegate.setup(savedInstanceState);
+        }
+    }
+
+    @Override
+    public void onSelect(int position) {
+        if (twoPaneDelegate != null) {
+            twoPaneDelegate.onSelect(position);
+        } else {
+            Intent intent = new Intent(this, StepActivity.class);
+            intent.putExtra(StepActivity.RECIPE_ID, recipeId);
+            intent.putExtra(StepActivity.STEP_POSITION, position);
+            startActivity(intent);
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (twoPaneDelegate != null) {
+            twoPaneDelegate.onSaveInstanceState(outState);
+        }
     }
 
     @Override

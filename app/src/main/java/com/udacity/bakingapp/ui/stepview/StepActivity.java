@@ -1,6 +1,5 @@
 package com.udacity.bakingapp.ui.stepview;
 
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.View;
 
@@ -13,6 +12,7 @@ import com.udacity.bakingapp.data.entity.Recipe;
 import com.udacity.bakingapp.data.entity.Step;
 import com.udacity.bakingapp.ui.RecipeViewModel;
 import com.udacity.bakingapp.ui.RecipeViewModelFactory;
+import com.udacity.bakingapp.util.ConfigurationUtils;
 
 import java.util.List;
 import java.util.Objects;
@@ -85,14 +85,10 @@ public class StepActivity extends AppCompatActivity {
     }
 
     private void enterFullscreenIfInLandscape() {
-        if (isInLandscapeMode()) {
+        if (ConfigurationUtils.isInLandscapeMode(this)) {
             hideActionBar();
             updateSystemUiVisibilityFlags();
         }
-    }
-
-    private boolean isInLandscapeMode() {
-        return getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
     }
 
     private void updateSystemUiVisibilityFlags() {

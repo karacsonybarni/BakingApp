@@ -1,5 +1,7 @@
 package com.udacity.bakingapp.ui.recipesview;
 
+import android.os.Bundle;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
@@ -7,12 +9,10 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.content.res.Configuration;
-import android.os.Bundle;
-
 import com.udacity.bakingapp.R;
 import com.udacity.bakingapp.data.Repository;
 import com.udacity.bakingapp.data.entity.Recipe;
+import com.udacity.bakingapp.util.ConfigurationUtils;
 import com.udacity.bakingapp.util.InjectorUtils;
 
 import java.util.List;
@@ -54,16 +54,11 @@ public class RecipesActivity extends AppCompatActivity {
     }
 
     private RecyclerView.LayoutManager getLayoutManager() {
-        if (isTablet()) {
+        if (ConfigurationUtils.isTablet(this)) {
             return new GridLayoutManager(this, 3);
         } else {
             return new LinearLayoutManager(this);
         }
-    }
-
-    private boolean isTablet() {
-        Configuration config = getResources().getConfiguration();
-        return config.smallestScreenWidthDp >= 600;
     }
 
     @Override

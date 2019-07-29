@@ -1,7 +1,6 @@
 package com.udacity.bakingapp.ui.descriptionview;
 
 import android.content.Context;
-import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +13,6 @@ import com.udacity.bakingapp.R;
 import com.udacity.bakingapp.data.entity.Ingredient;
 import com.udacity.bakingapp.data.entity.Recipe;
 import com.udacity.bakingapp.data.entity.Step;
-import com.udacity.bakingapp.ui.stepview.StepActivity;
 
 import java.text.DecimalFormat;
 
@@ -26,9 +24,11 @@ class DescriptionAdapter
 
     private Context context;
     private Recipe recipe;
+    private OnSelectionListener selectionListener;
 
-    DescriptionAdapter(Context context) {
+    DescriptionAdapter(Context context, OnSelectionListener selectionListener) {
         this.context = context;
+        this.selectionListener = selectionListener;
     }
 
     void update(Recipe recipe) {
@@ -113,12 +113,7 @@ class DescriptionAdapter
     }
 
     private View.OnClickListener getOnClickListener(int position) {
-        return view -> {
-            Intent intent = new Intent(context, StepActivity.class);
-            intent.putExtra(StepActivity.RECIPE_ID, recipe.getId());
-            intent.putExtra(StepActivity.STEP_POSITION, position);
-            context.startActivity(intent);
-        };
+        return view -> selectionListener.onSelect(position);
     }
 
     @Override

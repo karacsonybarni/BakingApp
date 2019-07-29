@@ -25,6 +25,7 @@ public class StepListFragment extends Fragment {
 
     private RecipeViewModel viewModel;
     private DescriptionAdapter adapter;
+    private OnSelectionListener selectionListener;
 
     @Nullable
     @Override
@@ -33,7 +34,7 @@ public class StepListFragment extends Fragment {
             @Nullable ViewGroup container,
             @Nullable Bundle savedInstanceState) {
         viewModel = getViewModel();
-        adapter = new DescriptionAdapter(getContext());
+        adapter = new DescriptionAdapter(getContext(), selectionListener);
         updateRecipe();
         return initRecyclerView(inflater, container);
     }
@@ -77,6 +78,16 @@ public class StepListFragment extends Fragment {
     @NonNull
     private Context getNonNullContext() {
         return Objects.requireNonNull(getContext());
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        try {
+            selectionListener = (OnSelectionListener) context;
+        } catch (ClassCastException ignored) {
+            throw new ClassCastException(context + "must implement OnSelectionListener");
+        }
     }
 
     @Override
