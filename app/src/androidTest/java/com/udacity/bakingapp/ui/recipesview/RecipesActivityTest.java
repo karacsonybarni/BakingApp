@@ -1,11 +1,15 @@
 package com.udacity.bakingapp.ui.recipesview;
 
+import androidx.test.espresso.IdlingRegistry;
+import androidx.test.espresso.IdlingResource;
 import androidx.test.espresso.intent.rule.IntentsTestRule;
 
 import com.udacity.bakingapp.TestData;
 import com.udacity.bakingapp.data.entity.Recipe;
 import com.udacity.bakingapp.ui.steplistview.StepListActivity;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -24,16 +28,27 @@ import static org.hamcrest.core.AllOf.allOf;
 public class RecipesActivityTest {
 
     @Rule
-    public IntentsTestRule<RecipesActivity> activityActivityTestRule =
+    public IntentsTestRule<RecipesActivity> recipesActivityTestRule =
             new IntentsTestRule<>(RecipesActivity.class);
 
+    private IdlingResource idlingResource;
     private Map<Long, Recipe> recipeMap = TestData.getRecipeMap();
 
+    @Before
+    public void registerIdlingResource() {
+        idlingResource = recipesActivityTestRule.getActivity().getIdlingResource();
+        IdlingRegistry.getInstance().register(idlingResource);
+    }
+
+    @After
+    public void unregisterIdlingResource() {
+        IdlingRegistry.getInstance().unregister(idlingResource);
+    }
+
     @Test
-    public void testCardsAreDisplayed() {
-        for (Map.Entry<Long, Recipe> entry : recipeMap.entrySet()) {
-            onView(withText(entry.getValue().getName())).check(matches(isDisplayed()));
-        }
+    public void testFirstCardIsDisplayed() {
+        Recipe nutellaPie = recipeMap.get(TestData.NUTELLA_PIE_ID);
+        onView(withText(nutellaPie.getName())).check(matches(isDisplayed()));
     }
 
     @Test

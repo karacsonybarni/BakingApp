@@ -2,6 +2,7 @@ package com.udacity.bakingapp.ui.recipesview;
 
 import android.os.Bundle;
 
+import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
@@ -21,6 +22,7 @@ public class RecipesActivity extends AppCompatActivity {
 
     private RecipesActivityViewModel viewModel;
     private RecipesAdapter adapter;
+    private SimpleIdlingResource idlingResource;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +30,7 @@ public class RecipesActivity extends AppCompatActivity {
         setContentView(R.layout.activity_recipes);
         viewModel = getViewModel();
         adapter = new RecipesAdapter(this);
+        idlingResource = getIdlingResource();
         observeRecipes();
         initRecyclerView();
     }
@@ -39,12 +42,24 @@ public class RecipesActivity extends AppCompatActivity {
         return viewModelProvider.get(RecipesActivityViewModel.class);
     }
 
+    @VisibleForTesting
+    SimpleIdlingResource getIdlingResource() {
+        if (idlingResource == null) {
+            idlingResource = new SimpleIdlingResource();
+        }
+        return idlingResource;
+    }
+
     private void observeRecipes() {
+        idlingResource.setIdleState(false);
         viewModel.getRecipes().observe(this, this::updateRecipes);
     }
 
     private void updateRecipes(List<Recipe> recipes) {
         adapter.updateAll(recipes);
+        if (recipes.size() > 0) {
+            idlingResource.setIdleState(true);
+        }
     }
 
     private void initRecyclerView() {
