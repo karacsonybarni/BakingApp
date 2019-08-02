@@ -7,5 +7,7 @@
     <color name="black">#000000</color>
     <color name="white">#FFFFFF</color>
 
-    <color name="ingredients_background">#E0F2F1</color>
+    <color name="ingredients_background">#EEEEEE</color>
+    <color name="selected_step_background">#B2DFDB</color>
+
 </resources>

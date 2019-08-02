@@ -1,4 +1,4 @@
-package com.udacity.bakingapp.ui.descriptionview;
+package com.udacity.bakingapp.ui.steplistview;
 
 import android.os.Bundle;
 
@@ -7,17 +7,16 @@ import androidx.fragment.app.Fragment;
 import com.udacity.bakingapp.R;
 import com.udacity.bakingapp.ui.stepview.StepFragment;
 
-class TwoPaneDescriptionActivityDelegate implements OnSelectionListener {
+class TwoPaneStepListActivityDelegate implements OnSelectionListener {
 
     private static final String STEP_POSITION = "stepPosition";
 
-    private DescriptionActivity activity;
-    private StepListFragment stepListFragment;
+    private StepListActivity activity;
     private StepFragment stepFragment;
 
     private int stepPosition;
 
-    TwoPaneDescriptionActivityDelegate(DescriptionActivity activity) {
+    TwoPaneStepListActivityDelegate(StepListActivity activity) {
         this.activity = activity;
     }
 
@@ -35,14 +34,14 @@ class TwoPaneDescriptionActivityDelegate implements OnSelectionListener {
     }
 
     private void initStepListFragment() {
-        stepListFragment =
-                (StepListFragment) activity
-                        .getSupportFragmentManager()
-                        .findFragmentById(R.id.stepListFragmentContainer);
+        StepListFragment stepListFragment = (StepListFragment) activity
+                .getSupportFragmentManager()
+                .findFragmentById(R.id.stepListFragmentContainer);
         if (stepListFragment == null) {
             stepListFragment = new StepListFragment();
             addFragment(R.id.stepListFragmentContainer, stepListFragment);
         }
+        stepListFragment.setStepPosition(stepPosition);
     }
 
     private void addFragment(int containerViewId, Fragment fragment) {
@@ -60,10 +59,8 @@ class TwoPaneDescriptionActivityDelegate implements OnSelectionListener {
         if (stepFragment == null) {
             stepFragment = new StepFragment();
             addFragment(R.id.stepFragmentContainer, stepFragment);
-            stepFragment.setStepPosition(stepPosition);
-        } else {
-            stepFragment.setStepPosition(stepPosition);
         }
+        stepFragment.setStepPosition(stepPosition);
     }
 
     void onSaveInstanceState(Bundle outState) {

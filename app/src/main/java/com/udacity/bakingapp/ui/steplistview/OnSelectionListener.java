@@ -1,4 +1,4 @@
-package com.udacity.bakingapp.ui.descriptionview;
+package com.udacity.bakingapp.ui.steplistview;
 
 interface OnSelectionListener {
 

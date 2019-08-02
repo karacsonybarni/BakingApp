@@ -1,4 +1,4 @@
-package com.udacity.bakingapp.ui.descriptionview;
+package com.udacity.bakingapp.ui.steplistview;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -16,8 +16,8 @@ import com.udacity.bakingapp.data.entity.Step;
 
 import java.text.DecimalFormat;
 
-class DescriptionAdapter
-        extends RecyclerView.Adapter<DescriptionAdapter.DescriptionViewHolder> {
+class StepListAdapter
+        extends RecyclerView.Adapter<StepListAdapter.StepViewHolder> {
 
     private static final int VIEW_TYPE_INGREDIENTS = 0;
     private static final int VIEW_TYPE_STEP = 1;
@@ -25,10 +25,16 @@ class DescriptionAdapter
     private Context context;
     private Recipe recipe;
     private OnSelectionListener selectionListener;
+    private int stepPosition;
 
-    DescriptionAdapter(Context context, OnSelectionListener selectionListener) {
+    StepListAdapter(Context context, OnSelectionListener selectionListener) {
         this.context = context;
         this.selectionListener = selectionListener;
+        stepPosition = 1;
+    }
+
+    void setStepPosition(int stepPosition) {
+        this.stepPosition = stepPosition;
     }
 
     void update(Recipe recipe) {
@@ -49,10 +55,10 @@ class DescriptionAdapter
 
     @NonNull
     @Override
-    public DescriptionViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public StepViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         int layoutId = getLayoutIdByViewType(viewType);
         View layout = LayoutInflater.from(context).inflate(layoutId, parent, false);
-        return new DescriptionViewHolder(layout, viewType);
+        return new StepViewHolder(layout, viewType);
     }
 
     private int getLayoutIdByViewType(int viewType) {
@@ -60,13 +66,13 @@ class DescriptionAdapter
             case VIEW_TYPE_INGREDIENTS:
                 return R.layout.ingredients;
             case VIEW_TYPE_STEP:
-                return R.layout.short_description;
+                return R.layout.list_item_step;
         }
         return 0;
     }
 
     @Override
-    public void onBindViewHolder(@NonNull DescriptionViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull StepViewHolder holder, int position) {
         switch (getItemViewType(position)) {
             case VIEW_TYPE_INGREDIENTS:
                 fillIngredientsLayoutIfEmpty(holder);
@@ -76,7 +82,7 @@ class DescriptionAdapter
         }
     }
 
-    private void fillIngredientsLayoutIfEmpty(DescriptionViewHolder holder) {
+    private void fillIngredientsLayoutIfEmpty(StepViewHolder holder) {
         ViewGroup ingredientsLayout = holder.ingredientsLayout;
         if (isIngredientsLayoutEmpty(ingredientsLayout)) {
             fillIngredientsLayout(ingredientsLayout);
@@ -105,15 +111,32 @@ class DescriptionAdapter
                 quantity, ingredient.getMeasure(), ingredient.getName());
     }
 
-    private void fillStepLayout(DescriptionViewHolder holder, int position) {
+    private void fillStepLayout(StepViewHolder holder, int position) {
         int stepPosition = position - 1;
         Step step = recipe.getSteps().get(stepPosition);
+        holder.itemView.setSelected(this.stepPosition == stepPosition);
         holder.shortDescription.setText(step.getShortDescription());
         holder.itemView.setOnClickListener(getOnClickListener(stepPosition));
     }
 
-    private View.OnClickListener getOnClickListener(int position) {
-        return view -> selectionListener.onSelect(position);
+    private View.OnClickListener getOnClickListener(int stepPosition) {
+        return view -> {
+            if (StepListAdapter.this.stepPosition != stepPosition) {
+                updateStepPosition(stepPosition);
+                selectionListener.onSelect(stepPosition);
+            }
+        };
+    }
+
+    private void updateStepPosition(int stepPosition) {
+        int oldStepPosition = this.stepPosition;
+        this.stepPosition = stepPosition;
+        if (oldStepPosition != -1) {
+            int oldPositionInAdapter = oldStepPosition + 1;
+            notifyItemChanged(oldPositionInAdapter);
+        }
+        int positionInAdapter = stepPosition + 1;
+        notifyItemChanged(positionInAdapter);
     }
 
     @Override
@@ -121,13 +144,13 @@ class DescriptionAdapter
         return recipe != null ? recipe.getSteps().size() + 1 : 0;
     }
 
-    class DescriptionViewHolder extends RecyclerView.ViewHolder {
+    class StepViewHolder extends RecyclerView.ViewHolder {
 
         private ViewGroup ingredientsLayout;
 
         private TextView shortDescription;
 
-        DescriptionViewHolder(@NonNull View itemView, int viewType) {
+        StepViewHolder(@NonNull View itemView, int viewType) {
             super(itemView);
 
             if (viewType == VIEW_TYPE_INGREDIENTS) {

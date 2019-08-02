@@ -1,4 +1,4 @@
-package com.udacity.bakingapp.ui.descriptionview;
+package com.udacity.bakingapp.ui.steplistview;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -24,8 +24,9 @@ import java.util.Objects;
 public class StepListFragment extends Fragment {
 
     private RecipeViewModel viewModel;
-    private DescriptionAdapter adapter;
+    private StepListAdapter adapter;
     private OnSelectionListener selectionListener;
+    private int savedStepPosition;
 
     @Nullable
     @Override
@@ -34,7 +35,7 @@ public class StepListFragment extends Fragment {
             @Nullable ViewGroup container,
             @Nullable Bundle savedInstanceState) {
         viewModel = getViewModel();
-        adapter = new DescriptionAdapter(getContext(), selectionListener);
+        initAdapter();
         updateRecipe();
         return initRecyclerView(inflater, container);
     }
@@ -46,6 +47,11 @@ public class StepListFragment extends Fragment {
     @NonNull
     private FragmentActivity getNonNullActivity() {
         return Objects.requireNonNull(getActivity());
+    }
+
+    private void initAdapter() {
+        adapter = new StepListAdapter(getContext(), selectionListener);
+        adapter.setStepPosition(savedStepPosition);
     }
 
     private void updateRecipe() {
@@ -88,6 +94,10 @@ public class StepListFragment extends Fragment {
         } catch (ClassCastException ignored) {
             throw new ClassCastException(context + "must implement OnSelectionListener");
         }
+    }
+
+    void setStepPosition(int stepPosition) {
+        savedStepPosition = stepPosition;
     }
 
     @Override

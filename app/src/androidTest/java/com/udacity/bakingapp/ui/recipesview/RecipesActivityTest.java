@@ -4,7 +4,7 @@ import androidx.test.espresso.intent.rule.IntentsTestRule;
 
 import com.udacity.bakingapp.TestData;
 import com.udacity.bakingapp.data.entity.Recipe;
-import com.udacity.bakingapp.ui.descriptionview.DescriptionActivity;
+import com.udacity.bakingapp.ui.steplistview.StepListActivity;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -41,7 +41,7 @@ public class RecipesActivityTest {
         Recipe nutellaPie = recipeMap.get(TestData.NUTELLA_PIE_ID);
         onView(withText(nutellaPie.getName())).perform(click());
         intended(allOf(
-                hasExtra(DescriptionActivity.RECIPE_ID_EXTRA, nutellaPie.getId()),
+                hasExtra(StepListActivity.RECIPE_ID_EXTRA, nutellaPie.getId()),
                 toPackage("com.udacity.bakingapp")
         ));
     }

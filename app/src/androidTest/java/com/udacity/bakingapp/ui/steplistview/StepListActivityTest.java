@@ -1,4 +1,4 @@
-package com.udacity.bakingapp.ui.descriptionview;
+package com.udacity.bakingapp.ui.steplistview;
 
 import android.content.Context;
 import android.content.Intent;
@@ -19,19 +19,19 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
-public class DescriptionActivityTest {
+public class StepListActivityTest {
 
     private static Map<Long, Recipe> recipeMap = TestData.getRecipeMap();
 
     @Rule
-    public ActivityTestRule<DescriptionActivity> activityRule =
-            new ActivityTestRule<DescriptionActivity>(DescriptionActivity.class) {
+    public ActivityTestRule<StepListActivity> activityRule =
+            new ActivityTestRule<StepListActivity>(StepListActivity.class) {
                 @Override
                 protected Intent getActivityIntent() {
                     Context context = ApplicationProvider.getApplicationContext();
-                    Intent intent = new Intent(context, DescriptionActivity.class);
+                    Intent intent = new Intent(context, StepListActivity.class);
                     Recipe nutellaPie = recipeMap.get(TestData.NUTELLA_PIE_ID);
-                    intent.putExtra(DescriptionActivity.RECIPE_ID_EXTRA, nutellaPie.getId());
+                    intent.putExtra(StepListActivity.RECIPE_ID_EXTRA, nutellaPie.getId());
                     return intent;
                 }
             };
@@ -44,7 +44,7 @@ public class DescriptionActivityTest {
 
     private String getRecipeNameByIdFromIntent() {
         Intent intent = activityRule.getActivity().getIntent();
-        long recipeId = intent.getLongExtra(DescriptionActivity.RECIPE_ID_EXTRA, -1);
+        long recipeId = intent.getLongExtra(StepListActivity.RECIPE_ID_EXTRA, -1);
         return recipeMap.get(recipeId).getName();
     }
 }

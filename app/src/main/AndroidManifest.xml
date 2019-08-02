@@ -20,7 +20,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.descriptionview.DescriptionActivity" />
+        <activity android:name=".ui.steplistview.StepListActivity" />
         <activity android:name=".ui.stepview.StepActivity" />
     </application>
 

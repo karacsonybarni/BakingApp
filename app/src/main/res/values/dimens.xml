@@ -15,6 +15,8 @@
     <dimen name="short_description_textSize">20sp</dimen>
     <dimen name="short_description_paddingVertical">12dp</dimen>
 
+    <dimen name="divider_thickness">1dp</dimen>
+
     <dimen name="step_layout_padding">18dp</dimen>
     <dimen name="description_marginTop">18dp</dimen>
     <dimen name="description_textSize">16sp</dimen>

@@ -1,4 +1,4 @@
-package com.udacity.bakingapp.ui.descriptionview;
+package com.udacity.bakingapp.ui.steplistview;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -15,7 +15,7 @@ import com.udacity.bakingapp.util.ConfigurationUtils;
 
 import java.util.Objects;
 
-public class DescriptionActivity extends AppCompatActivity implements OnSelectionListener {
+public class StepListActivity extends AppCompatActivity implements OnSelectionListener {
 
     public static final String RECIPE_ID_EXTRA = "recipeId";
 
@@ -23,14 +23,14 @@ public class DescriptionActivity extends AppCompatActivity implements OnSelectio
     private RecipeViewModel viewModel;
 
     @Nullable
-    private TwoPaneDescriptionActivityDelegate twoPaneDelegate;
+    private TwoPaneStepListActivityDelegate twoPaneDelegate;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         recipeId = getRecipeId();
         viewModel = RecipeViewModelFactory.getViewModel(this, recipeId);
-        setContentView(R.layout.activity_description);
+        setContentView(R.layout.activity_step_list);
         updateRecipe();
         setupFragmentsIfTablet(savedInstanceState);
     }
@@ -53,7 +53,7 @@ public class DescriptionActivity extends AppCompatActivity implements OnSelectio
 
     private void setupFragmentsIfTablet(Bundle savedInstanceState) {
         if (ConfigurationUtils.isTablet(this)) {
-            twoPaneDelegate = new TwoPaneDescriptionActivityDelegate(this);
+            twoPaneDelegate = new TwoPaneStepListActivityDelegate(this);
             twoPaneDelegate.setup(savedInstanceState);
         }
     }

@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.udacity.bakingapp.R;
 import com.udacity.bakingapp.data.entity.Recipe;
-import com.udacity.bakingapp.ui.descriptionview.DescriptionActivity;
+import com.udacity.bakingapp.ui.steplistview.StepListActivity;
 
 import java.util.List;
 
@@ -51,8 +51,8 @@ class RecipesAdapter extends RecyclerView.Adapter<RecipesAdapter.RecipeViewHolde
 
     private void setOnClickListener(RecipeViewHolder holder, Recipe recipe) {
         holder.itemView.setOnClickListener(view -> {
-            Intent intent = new Intent(context, DescriptionActivity.class);
-            intent.putExtra(DescriptionActivity.RECIPE_ID_EXTRA, recipe.getId());
+            Intent intent = new Intent(context, StepListActivity.class);
+            intent.putExtra(StepListActivity.RECIPE_ID_EXTRA, recipe.getId());
             context.startActivity(intent);
         });
     }
