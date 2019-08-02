@@ -1,5 +1,6 @@
 package com.udacity.bakingapp.ui.stepview;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -196,5 +197,9 @@ public class StepFragment extends Fragment {
     public void onDestroy() {
         super.onDestroy();
         viewModel.getRecipe().removeObservers(this);
+        Activity activity = getActivity();
+        if (activity == null || activity.isFinishing()) {
+            MediaProvider.close();
+        }
     }
 }

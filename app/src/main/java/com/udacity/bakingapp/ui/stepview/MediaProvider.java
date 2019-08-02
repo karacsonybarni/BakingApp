@@ -82,4 +82,15 @@ class MediaProvider {
             exoPlayer.setPlayWhenReady(false);
         }
     }
+
+    static void close() {
+        MediaProvider mediaProviderInstance = getInstance();
+        ExoPlayer exoPlayer = mediaProviderInstance.getExoPlayer();
+        if (exoPlayer != null) {
+            exoPlayer.stop();
+            exoPlayer.release();
+            mediaProviderInstance.setExoPlayer(null);
+            mediaProviderInstance.setMediaSourceUrl(null);
+        }
+    }
 }

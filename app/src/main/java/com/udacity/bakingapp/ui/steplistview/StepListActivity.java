@@ -59,13 +59,13 @@ public class StepListActivity extends AppCompatActivity implements OnSelectionLi
     }
 
     @Override
-    public void onSelect(int position) {
+    public void onSelect(int stepPosition) {
         if (twoPaneDelegate != null) {
-            twoPaneDelegate.onSelect(position);
+            twoPaneDelegate.onSelect(stepPosition);
         } else {
             Intent intent = new Intent(this, StepActivity.class);
             intent.putExtra(StepActivity.RECIPE_ID, recipeId);
-            intent.putExtra(StepActivity.STEP_POSITION, position);
+            intent.putExtra(StepActivity.STEP_POSITION, stepPosition);
             startActivity(intent);
         }
     }

@@ -51,7 +51,7 @@ public class StepListFragment extends Fragment {
 
     private void initAdapter() {
         adapter = new StepListAdapter(getContext(), selectionListener);
-        adapter.setStepPosition(savedStepPosition);
+        adapter.updateStepPosition(savedStepPosition);
     }
 
     private void updateRecipe() {
@@ -96,8 +96,11 @@ public class StepListFragment extends Fragment {
         }
     }
 
-    void setStepPosition(int stepPosition) {
+    void updateStepPosition(int stepPosition) {
         savedStepPosition = stepPosition;
+        if (adapter != null) {
+            adapter.updateStepPosition(stepPosition);
+        }
     }
 
     @Override

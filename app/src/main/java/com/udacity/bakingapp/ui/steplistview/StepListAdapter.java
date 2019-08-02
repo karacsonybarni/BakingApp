@@ -30,11 +30,6 @@ class StepListAdapter
     StepListAdapter(Context context, OnSelectionListener selectionListener) {
         this.context = context;
         this.selectionListener = selectionListener;
-        stepPosition = 1;
-    }
-
-    void setStepPosition(int stepPosition) {
-        this.stepPosition = stepPosition;
     }
 
     void update(Recipe recipe) {
@@ -120,21 +115,26 @@ class StepListAdapter
     }
 
     private View.OnClickListener getOnClickListener(int stepPosition) {
-        return view -> {
-            if (StepListAdapter.this.stepPosition != stepPosition) {
-                updateStepPosition(stepPosition);
-                selectionListener.onSelect(stepPosition);
-            }
-        };
+        return view -> selectionListener.onSelect(stepPosition);
     }
 
-    private void updateStepPosition(int stepPosition) {
+    void updateStepPosition(int stepPosition) {
+        if (this.stepPosition == stepPosition) {
+            return;
+        }
         int oldStepPosition = this.stepPosition;
         this.stepPosition = stepPosition;
-        if (oldStepPosition != -1) {
-            int oldPositionInAdapter = oldStepPosition + 1;
-            notifyItemChanged(oldPositionInAdapter);
+        if (hasSteps()) {
+            notifyStepItemChanged(oldStepPosition);
+            notifyStepItemChanged(stepPosition);
         }
+    }
+
+    private boolean hasSteps() {
+        return getItemCount() > 1;
+    }
+
+    private void notifyStepItemChanged(int stepPosition) {
         int positionInAdapter = stepPosition + 1;
         notifyItemChanged(positionInAdapter);
     }

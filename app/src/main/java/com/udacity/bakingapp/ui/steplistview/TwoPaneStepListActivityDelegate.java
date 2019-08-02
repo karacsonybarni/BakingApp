@@ -12,6 +12,7 @@ class TwoPaneStepListActivityDelegate implements OnSelectionListener {
     private static final String STEP_POSITION = "stepPosition";
 
     private StepListActivity activity;
+    private StepListFragment stepListFragment;
     private StepFragment stepFragment;
 
     private int stepPosition;
@@ -34,14 +35,14 @@ class TwoPaneStepListActivityDelegate implements OnSelectionListener {
     }
 
     private void initStepListFragment() {
-        StepListFragment stepListFragment = (StepListFragment) activity
+        stepListFragment = (StepListFragment) activity
                 .getSupportFragmentManager()
                 .findFragmentById(R.id.stepListFragmentContainer);
         if (stepListFragment == null) {
             stepListFragment = new StepListFragment();
             addFragment(R.id.stepListFragmentContainer, stepListFragment);
         }
-        stepListFragment.setStepPosition(stepPosition);
+        stepListFragment.updateStepPosition(stepPosition);
     }
 
     private void addFragment(int containerViewId, Fragment fragment) {
@@ -68,8 +69,9 @@ class TwoPaneStepListActivityDelegate implements OnSelectionListener {
     }
 
     @Override
-    public void onSelect(int position) {
-        stepPosition = position;
+    public void onSelect(int stepPosition) {
+        this.stepPosition = stepPosition;
+        stepListFragment.updateStepPosition(stepPosition);
         stepFragment.setStepPosition(stepPosition);
         stepFragment.updateViews();
     }

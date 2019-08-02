@@ -2,5 +2,5 @@ package com.udacity.bakingapp.ui.steplistview;
 
 interface OnSelectionListener {
 
-    void onSelect(int position);
+    void onSelect(int stepPosition);
 }
