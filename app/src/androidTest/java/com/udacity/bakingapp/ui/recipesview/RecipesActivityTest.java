@@ -2,8 +2,10 @@ package com.udacity.bakingapp.ui.recipesview;
 
 import androidx.test.espresso.IdlingRegistry;
 import androidx.test.espresso.IdlingResource;
+import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.espresso.intent.rule.IntentsTestRule;
 
+import com.udacity.bakingapp.R;
 import com.udacity.bakingapp.TestData;
 import com.udacity.bakingapp.data.entity.Recipe;
 import com.udacity.bakingapp.ui.steplistview.StepListActivity;
@@ -22,6 +24,7 @@ import static androidx.test.espresso.intent.Intents.intended;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasExtra;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.toPackage;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.core.AllOf.allOf;
 
@@ -46,9 +49,13 @@ public class RecipesActivityTest {
     }
 
     @Test
-    public void testFirstCardIsDisplayed() {
-        Recipe nutellaPie = recipeMap.get(TestData.NUTELLA_PIE_ID);
-        onView(withText(nutellaPie.getName())).check(matches(isDisplayed()));
+    public void testAllCardsAreDisplayed() {
+        int i = 0;
+        for (Recipe recipe : recipeMap.values()) {
+            onView(withId(R.id.recipes)).perform(RecyclerViewActions.scrollToPosition(i));
+            onView(withText(recipe.getName())).check(matches(isDisplayed()));
+            i++;
+        }
     }
 
     @Test
