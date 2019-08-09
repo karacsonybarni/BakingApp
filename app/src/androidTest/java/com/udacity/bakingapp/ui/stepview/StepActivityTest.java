@@ -7,6 +7,7 @@ import android.content.pm.ActivityInfo;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.intent.rule.IntentsTestRule;
 
+import com.udacity.bakingapp.BaseTest;
 import com.udacity.bakingapp.R;
 import com.udacity.bakingapp.TestData;
 import com.udacity.bakingapp.data.entity.Recipe;
@@ -26,7 +27,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
-public class StepActivityTest {
+public class StepActivityTest extends BaseTest {
 
     private static Map<Long, Recipe> recipeMap = TestData.getRecipeMap();
     private Recipe nutellaPie = recipeMap.get(TestData.NUTELLA_PIE_ID);
@@ -46,6 +47,7 @@ public class StepActivityTest {
             };
 
     @Test
+    @PhoneTest
     public void testFullScreenVideo() {
         activityRule.getActivity()
                 .setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
@@ -54,11 +56,10 @@ public class StepActivityTest {
     }
 
     @Test
+    @PhoneTest
     public void testNextButtonAndErrorImage() {
         testNextButton();
-        if (!isTablet()) {
-            testErrorImage();
-        }
+        testErrorImage();
     }
 
     private void testNextButton() {
@@ -67,13 +68,19 @@ public class StepActivityTest {
         onView(withText(nextStep.getDescription())).check(matches(isDisplayed()));
     }
 
-    private boolean isTablet() {
-        return ConfigurationUtils.isTablet(activityRule.getActivity());
-    }
-
     private void testErrorImage() {
         activityRule.getActivity()
                 .setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         onView(withId(R.id.thumbnail)).check(matches(isDisplayed()));
+    }
+
+    @Override
+    protected boolean isTablet() {
+        return ConfigurationUtils.isTablet(activityRule.getActivity());
+    }
+
+    @Override
+    protected boolean isPhone() {
+        return !isTablet();
     }
 }

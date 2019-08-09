@@ -4,8 +4,10 @@ import android.content.Context;
 import android.content.Intent;
 
 import androidx.test.core.app.ApplicationProvider;
+import androidx.test.espresso.ViewInteraction;
 import androidx.test.espresso.intent.rule.IntentsTestRule;
 
+import com.udacity.bakingapp.BaseTest;
 import com.udacity.bakingapp.R;
 import com.udacity.bakingapp.TestData;
 import com.udacity.bakingapp.data.entity.Recipe;
@@ -26,10 +28,11 @@ import static androidx.test.espresso.intent.matcher.IntentMatchers.hasExtra;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.toPackage;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.core.AllOf.allOf;
 
-public class StepListActivityTest {
+public class StepListActivityTest extends BaseTest {
 
     private static Map<Long, Recipe> recipeMap = TestData.getRecipeMap();
 
@@ -62,35 +65,62 @@ public class StepListActivityTest {
     public void testIntentAndStepDescriptionVisibility() {
         Recipe nutellaPie = recipeMap.get(TestData.NUTELLA_PIE_ID);
         int stepPosition = 0;
+        clickOnStepList(nutellaPie, stepPosition);
         testIntent(nutellaPie, stepPosition);
         testStepDescriptionIsDisplayed(nutellaPie, stepPosition);
     }
 
-    private void testIntent(Recipe recipe, int stepPosition) {
+    private void clickOnStepList(Recipe recipe, int stepPosition) {
         Step step = recipe.getSteps().get(stepPosition);
-        onView(withText(step.getShortDescription())).perform(click());
-        if (!isTablet()) {
-            intended(allOf(
-                    hasExtra(StepActivity.RECIPE_ID, recipe.getId()),
-                    hasExtra(StepActivity.STEP_POSITION, stepPosition),
-                    toPackage("com.udacity.bakingapp")
-            ));
-        }
+        ViewInteraction listItem =
+                isTablet() ? getListItemForTablet(step) : getListItemForPhone(step);
+        listItem.perform(click());
     }
 
-    private boolean isTablet() {
-        return ConfigurationUtils.isTablet(activityRule.getActivity());
+    private ViewInteraction getListItemForPhone(Step step) {
+        return onView(withText(step.getShortDescription()));
+    }
+
+    private ViewInteraction getListItemForTablet(Step step) {
+        return onView(
+                allOf(
+                        withParent(withId(R.id.step_list_layout)),
+                        withText(step.getShortDescription())));
+    }
+
+    private void testIntent(Recipe recipe, int stepPosition) {
+        if (isTablet()) {
+            return;
+        }
+        intended(allOf(
+                hasExtra(StepActivity.RECIPE_ID, recipe.getId()),
+                hasExtra(StepActivity.STEP_POSITION, stepPosition),
+                toPackage("com.udacity.bakingapp")
+        ));
     }
 
     private void testStepDescriptionIsDisplayed(Recipe recipe, int stepPosition) {
         Step step = recipe.getSteps().get(stepPosition);
-        onView(withText(step.getDescription())).check(matches(isDisplayed()));
+        onView(
+                allOf(
+                        withId(R.id.description),
+                        withText(step.getDescription())))
+                .check(matches(isDisplayed()));
     }
 
     @Test
+    @TabletTest
     public void testTwoPaneLayout() {
-        if (isTablet()) {
-            onView(withId(R.id.stepFragmentContainer)).check(matches(isDisplayed()));
-        }
+        onView(withId(R.id.stepFragmentContainer)).check(matches(isDisplayed()));
+    }
+
+    @Override
+    protected boolean isTablet() {
+        return ConfigurationUtils.isTablet(activityRule.getActivity());
+    }
+
+    @Override
+    protected boolean isPhone() {
+        return !isTablet();
     }
 }
