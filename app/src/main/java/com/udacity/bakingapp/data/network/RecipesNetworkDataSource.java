@@ -69,7 +69,7 @@ public class RecipesNetworkDataSource {
         return recipesLiveData;
     }
 
-    public void setRecipes(List<Recipe> recipes) {
-        this.recipesLiveData.postValue(recipes);
+    private void setRecipes(List<Recipe> recipes) {
+        recipesLiveData.postValue(recipes);
     }
 }
