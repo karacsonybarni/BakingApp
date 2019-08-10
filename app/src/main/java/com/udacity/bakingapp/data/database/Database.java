@@ -7,7 +7,7 @@ import androidx.room.RoomDatabase;
 
 import com.udacity.bakingapp.data.entity.Recipe;
 
-@androidx.room.Database(entities = {Recipe.class}, version = 2, exportSchema = false)
+@androidx.room.Database(entities = {Recipe.class}, version = 3, exportSchema = false)
 @androidx.room.TypeConverters(TypeConverters.class)
 public abstract class Database extends RoomDatabase {
 

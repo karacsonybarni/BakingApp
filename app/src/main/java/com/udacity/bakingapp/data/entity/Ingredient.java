@@ -1,5 +1,11 @@
 package com.udacity.bakingapp.data.entity;
 
+import android.content.Context;
+
+import com.udacity.bakingapp.R;
+
+import java.text.DecimalFormat;
+
 public class Ingredient {
 
     private String name;
@@ -28,5 +34,12 @@ public class Ingredient {
 
     public void setMeasure(String measure) {
         this.measure = measure;
+    }
+
+    public String toString(Context context) {
+        String quantity = new DecimalFormat("#.##").format(getQuantity());
+        return context.getString(
+                R.string.ingredient,
+                quantity, getMeasure(), getName());
     }
 }

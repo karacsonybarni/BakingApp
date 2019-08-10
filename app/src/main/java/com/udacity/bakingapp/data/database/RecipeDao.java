@@ -31,4 +31,10 @@ public abstract class RecipeDao {
 
     @Query("DELETE FROM recipe")
     abstract void deleteAllRecipes();
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    public abstract void insert(Recipe recipe);
+
+    @Query("SELECT * FROM recipe ORDER BY lastViewed DESC LIMIT 1")
+    public abstract Recipe getLastViewedRecipe();
 }

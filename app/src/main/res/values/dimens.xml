@@ -19,4 +19,7 @@
     <dimen name="description_marginTop">18dp</dimen>
     <dimen name="description_textSize">16sp</dimen>
     <dimen name="navigation_button_margin">8dp</dimen>
+
+    <dimen name="ingredients_widget_minSize">80dp</dimen>
+    <dimen name="ingredients_widget_padding">8dp</dimen>
 </resources>

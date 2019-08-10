@@ -51,11 +51,19 @@ public class Repository {
         return sInstance;
     }
 
+    public void updateRecipe(Recipe recipe) {
+        executors.diskIO().execute(() -> recipeDao.insert(recipe));
+    }
+
     public LiveData<Recipe> getRecipe(long id) {
         return recipeDao.getRecipe(id);
     }
 
     public LiveData<List<Recipe>> getRecipes() {
         return recipeDao.getRecipes();
+    }
+
+    public Recipe getLastViewedRecipe() {
+        return recipeDao.getLastViewedRecipe();
     }
 }

@@ -13,6 +13,7 @@ public class Recipe {
     private String name;
     private List<Ingredient> ingredients;
     private List<Step> steps;
+    private long lastViewed;
 
     public void setId(long id) {
         this.id = id;
@@ -44,5 +45,13 @@ public class Recipe {
 
     public void setSteps(List<Step> steps) {
         this.steps = steps;
+    }
+
+    public long getLastViewed() {
+        return lastViewed;
+    }
+
+    public void setLastViewed(long lastViewed) {
+        this.lastViewed = lastViewed;
     }
 }

@@ -1,5 +1,7 @@
 package com.udacity.bakingapp.ui.steplistview;
 
+import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -18,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.udacity.bakingapp.R;
 import com.udacity.bakingapp.data.entity.Recipe;
 import com.udacity.bakingapp.ui.RecipeViewModel;
+import com.udacity.bakingapp.ui.widget.IngredientsWidgetProvider;
 
 import java.util.Objects;
 
@@ -27,6 +30,8 @@ public class StepListFragment extends Fragment {
     private StepListAdapter adapter;
     private OnSelectionListener selectionListener;
     private int savedStepPosition;
+
+    @Nullable private Recipe recipe;
 
     @Nullable
     @Override
@@ -59,6 +64,7 @@ public class StepListFragment extends Fragment {
     }
 
     private void updateRecipe(Recipe recipe) {
+        this.recipe = recipe;
         adapter.update(recipe);
     }
 
@@ -101,6 +107,24 @@ public class StepListFragment extends Fragment {
         if (adapter != null) {
             adapter.updateStepPosition(stepPosition);
         }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (recipe != null) {
+            viewModel.updateLastViewed(recipe);
+            updateWidgets();
+        }
+    }
+
+    private void updateWidgets() {
+        Context context = getNonNullContext();
+        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+        ComponentName provider = new ComponentName(context, IngredientsWidgetProvider.class);
+        int[] appWidgetIds = appWidgetManager.getAppWidgetIds(provider);
+        IngredientsWidgetProvider.updateWidgets(context, appWidgetManager, appWidgetIds, recipe);
+        appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.ingredients);
     }
 
     @Override

@@ -5,4 +5,5 @@
     <string name="ingredients">Ingredients</string>
     <string name="previous_button">Previous</string>
     <string name="next_button">Next</string>
+    <string name="ingredients_widget_empty">View a recipe in the BakingApp</string>
 </resources>

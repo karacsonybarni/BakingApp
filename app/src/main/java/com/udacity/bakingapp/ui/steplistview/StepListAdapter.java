@@ -14,8 +14,6 @@ import com.udacity.bakingapp.data.entity.Ingredient;
 import com.udacity.bakingapp.data.entity.Recipe;
 import com.udacity.bakingapp.data.entity.Step;
 
-import java.text.DecimalFormat;
-
 class StepListAdapter
         extends RecyclerView.Adapter<StepListAdapter.StepViewHolder> {
 
@@ -94,16 +92,9 @@ class StepListAdapter
                     (TextView) LayoutInflater
                             .from(context)
                             .inflate(R.layout.ingredient, ingredientsLayout, false);
-            ingredientView.setText(getIngredientText(ingredient));
+            ingredientView.setText(ingredient.toString(context));
             ingredientsLayout.addView(ingredientView);
         }
-    }
-
-    private String getIngredientText(Ingredient ingredient) {
-        String quantity = new DecimalFormat("#.##").format(ingredient.getQuantity());
-        return context.getString(
-                R.string.ingredient,
-                quantity, ingredient.getMeasure(), ingredient.getName());
     }
 
     private void fillStepLayout(StepViewHolder holder, int position) {
