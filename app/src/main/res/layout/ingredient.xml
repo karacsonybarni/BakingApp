@@ -5,4 +5,5 @@
     android:layout_height="wrap_content"
     android:background="@color/ingredients_background"
     android:gravity="start"
+    android:textColor="@color/primary_text"
     android:textSize="@dimen/ingredient_textSize" />

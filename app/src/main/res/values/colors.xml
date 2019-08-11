@@ -9,4 +9,6 @@
     <color name="ingredients_background">#EEEEEE</color>
     <color name="selected_step_background">#B2DFDB</color>
 
+    <color name="primary_text">#DE000000</color>
+
 </resources>
