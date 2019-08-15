@@ -10,9 +10,11 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.udacity.bakingapp.R;
 import com.udacity.bakingapp.data.Repository;
 import com.udacity.bakingapp.data.entity.Recipe;
+import com.udacity.bakingapp.data.network.RecipesNetworkDataSource;
 import com.udacity.bakingapp.util.ConfigurationUtils;
 import com.udacity.bakingapp.util.InjectorUtils;
 
@@ -22,6 +24,7 @@ public class RecipesActivity extends AppCompatActivity {
 
     private RecipesActivityViewModel viewModel;
     private RecipesAdapter adapter;
+    private RecyclerView recyclerView;
     private SimpleIdlingResource idlingResource;
 
     @Override
@@ -56,14 +59,21 @@ public class RecipesActivity extends AppCompatActivity {
     }
 
     private void updateRecipes(List<Recipe> recipes) {
-        adapter.updateAll(recipes);
         if (recipes.size() > 0) {
-            idlingResource.setIdleState(true);
+            adapter.updateAll(recipes);
+        } else {
+            Snackbar
+                    .make(recyclerView, R.string.no_internet, Snackbar.LENGTH_LONG)
+                    .setAction(
+                            R.string.retry,
+                            v -> RecipesNetworkDataSource.getInstance(this).fetchRecipes())
+                    .show();
         }
+        idlingResource.setIdleState(true);
     }
 
     private void initRecyclerView() {
-        RecyclerView recyclerView = findViewById(R.id.recipes);
+        recyclerView = findViewById(R.id.recipes);
         recyclerView.setLayoutManager(getLayoutManager());
         recyclerView.setAdapter(adapter);
     }
