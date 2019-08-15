@@ -3,6 +3,7 @@ package com.udacity.bakingapp.ui.steplistview;
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -114,17 +115,20 @@ public class StepListFragment extends Fragment {
         super.onPause();
         if (recipe != null) {
             viewModel.updateLastViewed(recipe);
-            updateWidgets();
+            updateWidgets(recipe);
         }
     }
 
-    private void updateWidgets() {
+    private void updateWidgets(@NonNull Recipe recipe) {
         Context context = getNonNullContext();
         AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
         ComponentName provider = new ComponentName(context, IngredientsWidgetProvider.class);
         int[] appWidgetIds = appWidgetManager.getAppWidgetIds(provider);
-        IngredientsWidgetProvider.updateWidgets(context, appWidgetManager, appWidgetIds, recipe);
-        appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.ingredients);
+        Intent intent = new Intent(context, IngredientsWidgetProvider.class);
+        intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, appWidgetIds);
+        intent.putExtra(IngredientsWidgetProvider.EXTRA_RECIPE_NAME, recipe.getName());
+        context.sendBroadcast(intent);
     }
 
     @Override

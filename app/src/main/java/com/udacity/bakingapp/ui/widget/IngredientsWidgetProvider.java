@@ -2,59 +2,64 @@ package com.udacity.bakingapp.ui.widget;
 
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.widget.RemoteViews;
 
+import androidx.annotation.Nullable;
+
 import com.udacity.bakingapp.R;
+import com.udacity.bakingapp.data.Repository;
 import com.udacity.bakingapp.data.entity.Recipe;
+import com.udacity.bakingapp.util.AppExecutors;
+import com.udacity.bakingapp.util.InjectorUtils;
 
 /**
  * Implementation of App Widget functionality.
  */
 public class IngredientsWidgetProvider extends AppWidgetProvider {
 
-    private static IngredientsWidgetProvider instance;
-    private Recipe recipe;
+    public static final String EXTRA_RECIPE_NAME = "recipeName";
 
-    private static IngredientsWidgetProvider getInstance() {
-        if (instance == null) {
-            instance = new IngredientsWidgetProvider();
+    @Nullable
+    private String recipeName;
+
+    @Override
+    public void onReceive(Context context, Intent intent) {
+        if (AppWidgetManager.ACTION_APPWIDGET_UPDATE.equals(intent.getAction())) {
+            onUpdateIntentReceived(intent);
         }
-        return instance;
+        super.onReceive(context, intent);
     }
 
-    public static void updateWidgets(
-            Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds, Recipe recipe) {
-        IngredientsWidgetProvider ingredientsWidgetProvider = getInstance();
-        ingredientsWidgetProvider.recipe = recipe;
-        ingredientsWidgetProvider.onUpdate(context, appWidgetManager, appWidgetIds);
+    private void onUpdateIntentReceived(Intent intent) {
+        Bundle extras = intent.getExtras();
+        if (extras != null && extras.containsKey(EXTRA_RECIPE_NAME)) {
+            recipeName = extras.getString(EXTRA_RECIPE_NAME);
+        }
     }
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
-        if (recipe == null) {
-            return;
-        }
-        // There may be multiple widgets active, so update all of them
         for (int appWidgetId : appWidgetIds) {
             updateWidget(context, appWidgetManager, appWidgetId);
         }
+        super.onUpdate(context, appWidgetManager, appWidgetIds);
     }
-
     private void updateWidget(
             Context context, AppWidgetManager appWidgetManager, int widgetId) {
-
-        // Construct the RemoteViews object
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.ingredients_widget);
         updateRecipe(context, views);
-
-        // Instruct the widget manager to update the widget
         appWidgetManager.updateAppWidget(widgetId, views);
+        appWidgetManager.notifyAppWidgetViewDataChanged(widgetId, R.id.ingredients);
     }
 
     private void updateRecipe(Context context, RemoteViews views) {
-        views.setTextViewText(R.id.recipeName, recipe.getName());
+        if (recipeName != null) {
+            views.setTextViewText(R.id.recipeName, recipeName);
+        }
         updateIngredients(context, views);
     }
 
@@ -65,6 +70,23 @@ public class IngredientsWidgetProvider extends AppWidgetProvider {
 
     @Override
     public void onEnabled(Context context) {
+        AppExecutors.getInstance().diskIO().execute(() -> {
+            updateRecipeName(context);
+            updateViews(context);
+        });
+    }
+
+    private void updateRecipeName(Context context) {
+        Repository repository = InjectorUtils.getRepository(context);
+        Recipe recipe = repository.getLastViewedRecipe();
+        recipeName = recipe.getName();
+    }
+
+    private void updateViews(Context context) {
+        ComponentName provider = new ComponentName(context, IngredientsWidgetProvider.class);
+        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+        int[] appWidgetIds = appWidgetManager.getAppWidgetIds(provider);
+        onUpdate(context, appWidgetManager, appWidgetIds);
     }
 
     @Override
