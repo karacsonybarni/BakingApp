@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.View;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.button.MaterialButton;
@@ -40,6 +41,7 @@ public class StepActivity extends AppCompatActivity {
         setContentView(R.layout.activity_step);
         initViews();
         initStepFragment();
+        getNonNullActionBar().setDisplayHomeAsUpEnabled(true);
         enterFullscreenIfInLandscape();
         updateRecipe();
     }
@@ -100,7 +102,11 @@ public class StepActivity extends AppCompatActivity {
     }
 
     private void hideActionBar() {
-        Objects.requireNonNull(getSupportActionBar()).hide();
+        getNonNullActionBar().hide();
+    }
+
+    private ActionBar getNonNullActionBar() {
+        return Objects.requireNonNull(getSupportActionBar());
     }
 
     private void updateRecipe() {
@@ -114,7 +120,7 @@ public class StepActivity extends AppCompatActivity {
     }
 
     private void setTitle() {
-        Objects.requireNonNull(getSupportActionBar()).setTitle(recipe.getName());
+        getNonNullActionBar().setTitle(recipe.getName());
     }
 
     private void updateButtons() {

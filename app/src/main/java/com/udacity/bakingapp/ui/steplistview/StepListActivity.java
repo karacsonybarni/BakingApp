@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.udacity.bakingapp.R;
@@ -31,12 +32,17 @@ public class StepListActivity extends AppCompatActivity implements OnSelectionLi
         recipeId = getRecipeId();
         viewModel = RecipeViewModelFactory.getViewModel(this, recipeId);
         setContentView(R.layout.activity_step_list);
+        getNonNullActionBar().setDisplayHomeAsUpEnabled(true);
         updateRecipe();
         setupFragmentsIfTablet(savedInstanceState);
     }
 
     private long getRecipeId() {
         return getIntent().getLongExtra(RECIPE_ID_EXTRA, -1);
+    }
+
+    private ActionBar getNonNullActionBar() {
+        return Objects.requireNonNull(getSupportActionBar());
     }
 
     private void updateRecipe() {
@@ -48,7 +54,7 @@ public class StepListActivity extends AppCompatActivity implements OnSelectionLi
     }
 
     private void setTitle(String title) {
-        Objects.requireNonNull(getSupportActionBar()).setTitle(title);
+        getNonNullActionBar().setTitle(title);
     }
 
     private void setupFragmentsIfTablet(Bundle savedInstanceState) {
