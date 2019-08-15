@@ -19,6 +19,7 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ui.PlayerView;
+import com.google.android.exoplayer2.util.Util;
 import com.squareup.picasso.Picasso;
 import com.udacity.bakingapp.R;
 import com.udacity.bakingapp.data.entity.Recipe;
@@ -194,12 +195,29 @@ public class StepFragment extends Fragment {
     }
 
     @Override
+    public void onPause() {
+        super.onPause();
+        if (Util.SDK_INT <= 23 && isFinishing()) {
+            MediaProvider.close();
+        }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (Util.SDK_INT > 23 && isFinishing()) {
+            MediaProvider.close();
+        }
+    }
+
+    private boolean isFinishing() {
+        Activity activity = getActivity();
+        return activity == null || activity.isFinishing();
+    }
+
+    @Override
     public void onDestroy() {
         super.onDestroy();
         viewModel.getRecipe().removeObservers(this);
-        Activity activity = getActivity();
-        if (activity == null || activity.isFinishing()) {
-            MediaProvider.close();
-        }
     }
 }
