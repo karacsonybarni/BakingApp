@@ -13,7 +13,7 @@ for the selected step in the recipe
 
 ### Recipes View
 
-The Recipes View shows the names of all the recipes that the user can select. 
+The Recipes View shows the names of all the recipes of the app. 
 When the user selects a recipe by tapping on it, the app takes them to the Details View.
 
 ### Details View
