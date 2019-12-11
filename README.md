@@ -1,7 +1,7 @@
 # Backing App
 
 Baking App is an Android app 
-that allows the users to select a recipe and see video-guided steps for how to complete it.
+that allows users to select a recipe and see video-guided steps for how to complete it.
 
 ## User interface
 
